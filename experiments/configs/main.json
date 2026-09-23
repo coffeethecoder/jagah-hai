@@ -1,0 +1,13 @@
+{
+  "name": "main",
+  "routes": ["demo-line"],
+  "berths": [72],
+  "racBerths": [0, 9],
+  "scenarios": ["short", "long", "mixed", "uniform"],
+  "tatkal": [false, true],
+  "tatkalFraction": 0.2,
+  "demandFactors": [0.6, 0.8, 1.0, 1.2, 1.4, 1.6],
+  "seeds": { "from": 1, "to": 100 },
+  "strategies": ["first-fit", "best-fit", "random-fit", "deferred", "offline-optimum"],
+  "unbounded": true
+}

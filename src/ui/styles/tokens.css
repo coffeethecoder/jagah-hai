@@ -1,0 +1,12 @@
+:root {
+  --paper:        #F6F8FB;  /* cool chart-paper white (deliberately not cream) */
+  --ink:          #14213D;  /* navy ink for text */
+  --coach-blue:   #1F4E9A;  /* structure: headers, grid lines at low opacity, pending outlines */
+  --signal-green: #1E8449;  /* seated */
+  --signal-amber: #D68910;  /* strategy-induced rejection */
+  --signal-red:   #B03A2E;  /* forced rejection */
+
+  --font: "Overpass", "Segoe UI", system-ui, sans-serif;  /* signage-derived face, one family */
+  --step--1: 0.833rem; --step-0: 1rem; --step-1: 1.2rem; --step-2: 1.44rem; --step-3: 1.728rem;
+  --space-1: 4px; --space-2: 8px; --space-3: 12px; --space-4: 16px; --space-6: 24px; --space-8: 32px;
+}

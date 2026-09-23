@@ -1,0 +1,18 @@
+{
+  "id": "demo-line",
+  "name": "Demo Line (fictional)",
+  "trainNumber": null,
+  "source": "fictional test route",
+  "stations": [
+    { "code": "AAA", "name": "Alpha Junction",   "km": 0,   "weight": 3 },
+    { "code": "BBB", "name": "Bravo",            "km": 42,  "weight": 1 },
+    { "code": "CCC", "name": "Charlie",          "km": 97,  "weight": 1 },
+    { "code": "DDD", "name": "Delta",            "km": 151, "weight": 1 },
+    { "code": "EEE", "name": "Echo Junction",    "km": 218, "weight": 3 },
+    { "code": "FFF", "name": "Foxtrot",          "km": 270, "weight": 1 },
+    { "code": "GGG", "name": "Golf",             "km": 334, "weight": 1 },
+    { "code": "HHH", "name": "Hotel",            "km": 389, "weight": 1 },
+    { "code": "III", "name": "India",            "km": 447, "weight": 1 },
+    { "code": "JJJ", "name": "Juliett Terminus", "km": 512, "weight": 3 }
+  ]
+}

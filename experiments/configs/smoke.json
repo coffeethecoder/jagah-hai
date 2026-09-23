@@ -1,0 +1,13 @@
+{
+  "name": "smoke",
+  "routes": ["demo-line"],
+  "berths": [72],
+  "racBerths": [0],
+  "scenarios": ["mixed"],
+  "tatkal": [false],
+  "tatkalFraction": 0.2,
+  "demandFactors": [0.8, 1.2],
+  "seeds": { "from": 1, "to": 3 },
+  "strategies": ["first-fit", "best-fit", "random-fit", "deferred", "offline-optimum"],
+  "unbounded": true
+}

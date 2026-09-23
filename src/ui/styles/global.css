@@ -1,0 +1,12 @@
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font);
+  font-size: var(--step-0);
+  line-height: 1.5;
+}
+
+h1 { font-size: var(--step-3); font-weight: 800; margin: 0 0 var(--space-2); }
