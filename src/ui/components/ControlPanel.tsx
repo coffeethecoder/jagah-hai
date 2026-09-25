@@ -91,10 +91,28 @@ export function ControlPanel({ config, routes, onChange }: Props) {
 
       <label className={s.field}>
         Strategy
-        <select value={config.strategy} onChange={(e) => onChange({ strategy: e.target.value as OnlineStrategy })}>
+        <select value={config.strategy} onChange={(e) => {
+          const strategy = e.target.value as OnlineStrategy;
+          // Keep the comparison on a different strategy (default pairing: First-fit vs Deferred).
+          const compareWith = strategy !== config.compareWith ? config.compareWith : strategy === 'deferred' ? 'first-fit' : 'deferred';
+          onChange({ strategy, compareWith });
+        }}>
           {STRATEGIES.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
         </select>
       </label>
+
+      <label className={`${s.field} ${s.inline}`}>
+        <input type="checkbox" checked={config.compare} onChange={(e) => onChange({ compare: e.target.checked })} />
+        Compare with another strategy
+      </label>
+      {config.compare && (
+        <label className={s.field}>
+          Compare with
+          <select value={config.compareWith} onChange={(e) => onChange({ compareWith: e.target.value as OnlineStrategy })}>
+            {STRATEGIES.filter((o) => o.value !== config.strategy).map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
+          </select>
+        </label>
+      )}
     </section>
   );
 }

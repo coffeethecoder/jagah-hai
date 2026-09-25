@@ -51,3 +51,12 @@ Section 16 said to commit after each phase. Changed so that the user makes every
 - **Ghost bar** shows the request decided at the current step, labelled with its outcome (Seated / Pending / Full here / Assignment), since playback moves in whole steps.
 - **Column width follows the container** (40–120 px per segment); the chart scrolls sideways inside its own box, never the page. SVG only; the canvas fallback above 5000 cells waits for long real routes.
 - **One shared CSS module** (`src/ui/styles/ui.module.css`) instead of one per component.
+
+## 2026-09-25 — Phase 6 choices (proofs, charting, comparison)
+- **Proof panel highlights the live chart, without rewinding playback.** Tier 1 never moves or removes a passenger, so a forced certificate's occupants are still on the chart at every later step: the full segment is tinted red, its occupants outlined, everyone else faded.
+- **Strategy-induced proof** shows per-segment load at the moment of rejection (from the event's load profile) and, on request, the EST witness in a second grid with the rejected passenger in amber. The copy says the witness moves earlier passengers, which Tier 1 cannot do.
+- **Charting starts only when the user presses "Prepare chart"**, and only after the last request (booking has closed). Bookings are placed in EST order (earliest boarding first); each bar grows in from its boarding station. Duration is fixed at about 2 s by the clock, not by frame count, so heavy frames or a background tab do not slow it. With `prefers-reduced-motion`, all bookings are placed at once and the CSS animation is off.
+- **Pending pool lanes are display only:** arrival order, first lane where the booking fits. They carry no berth meaning, and the pool sits below the grid so compare-mode grids line up row for row.
+- **Compare mode** shows the selected strategy and one other (default Deferred; First-fit when Deferred is selected) at the same playback step, each with its own load profile. The proof panel and metrics strip follow the selected strategy.
+- **TierComparison covers the whole stream**, whatever the playback position. "Lost to fragmentation" = Deferred minus that Tier 1 strategy (can be negative on one stream; the panel says so when it is). "Lost to first-come-first-served" = Optimum minus Deferred.
+- **Prefix optimum for the performance ratio is memoised on the step alone**, so charting frames do not recompute it.

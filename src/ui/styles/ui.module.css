@@ -3,7 +3,7 @@
 .app {
   display: grid;
   grid-template-columns: 272px minmax(0, 1fr);
-  grid-template-areas: "header header" "sidebar main";
+  grid-template-areas: "header header" "sidebar main" "bottom bottom";
   gap: var(--space-6) var(--space-8);
   padding: var(--space-6) var(--space-8);
   max-width: 1440px;
@@ -61,5 +61,41 @@
 .chartScroll svg { display: block; }
 
 @media (max-width: 1023px) {
-  .app { grid-template-columns: minmax(0, 1fr); grid-template-areas: "header" "sidebar" "main"; padding: var(--space-4); }
+  .app { grid-template-columns: minmax(0, 1fr); grid-template-areas: "header" "sidebar" "main" "bottom"; padding: var(--space-4); }
 }
+
+/* Charting: the single orchestrated animation. Each bar grows from its boarding station as it is placed. */
+.grow { transform-box: fill-box; transform-origin: left center; animation: grow 280ms ease-out; }
+@keyframes grow { from { transform: scaleX(0); opacity: 0; } to { transform: scaleX(1); opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .grow { animation: none; } }
+
+.bottom { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); gap: var(--space-6) var(--space-8); grid-area: bottom; }
+.panel { display: flex; flex-direction: column; gap: var(--space-3); padding-top: var(--space-4); border-top: 1px solid color-mix(in srgb, var(--coach-blue) 20%, transparent); }
+.panel h2 { margin: 0; font-size: var(--step-1); font-weight: 800; }
+.panel h3 { margin: 0; font-size: var(--step-0); font-weight: 800; }
+.panel p { margin: 0; }
+
+.chips { display: flex; flex-wrap: wrap; gap: var(--space-1); max-height: 168px; overflow-y: auto; padding: 2px; }
+.rejChip {
+  font: inherit; font-size: var(--step--1); font-weight: 600; font-variant-numeric: tabular-nums;
+  padding: 2px var(--space-2); border-radius: 3px; border: 2px solid transparent; color: white; cursor: pointer;
+}
+.rejChip[aria-pressed="true"] { border-color: var(--ink); box-shadow: 0 0 0 1px white inset; }
+.rejChip:focus-visible { outline: 2px solid var(--ink); outline-offset: 1px; }
+
+.occupants { display: flex; flex-wrap: wrap; gap: var(--space-1) var(--space-3); max-height: 120px; overflow-y: auto; font-size: var(--step--1); font-variant-numeric: tabular-nums; margin: 0; padding: 0; list-style: none; }
+
+.table { border-collapse: collapse; font-variant-numeric: tabular-nums; font-size: var(--step--1); }
+.table th, .table td { text-align: left; padding: var(--space-1) var(--space-3) var(--space-1) 0; border-bottom: 1px solid color-mix(in srgb, var(--coach-blue) 15%, transparent); }
+.table td.n, .table th.n { text-align: right; }
+.table tr.current td { font-weight: 800; }
+
+.boards { display: flex; gap: var(--space-6); }
+.board { display: flex; flex-direction: column; gap: var(--space-2); }
+.board h3 { margin: 0; font-size: var(--step-0); font-weight: 800; }
+
+@media (max-width: 1023px) {
+  .bottom { grid-template-columns: minmax(0, 1fr); }
+}
+
+.tableWrap { overflow-x: auto; max-width: 100%; }

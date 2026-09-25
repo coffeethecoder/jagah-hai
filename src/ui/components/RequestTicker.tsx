@@ -32,7 +32,13 @@ export function RequestTicker({ route, view, berths }: { route: Route; view: Sim
     <p className={s.ticker} aria-live="polite">
       {request} {outcome}
       {view.charted && <><br />Chart prepared: all {view.counts.seated} accepted bookings now have berths.</>}
-      {view.pending > 0 && <><br /><span className={s.muted}>{plural(view.pending, 'booking')} waiting for charting. Jump to the end to prepare the chart.</span></>}
+      {!view.charting && view.pending.length > 0 && (
+        <><br /><span className={s.muted}>
+          {view.step === view.total
+            ? `Booking has closed. ${plural(view.pending.length, 'booking')} wait for the chart: press Prepare chart under the grid.`
+            : `${plural(view.pending.length, 'booking')} waiting for charting.`}
+        </span></>
+      )}
     </p>
   );
 }
