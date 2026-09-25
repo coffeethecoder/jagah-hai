@@ -4,5 +4,6 @@ import type { OccupancyGrid } from '../coach';
 
 /** Lowest-index free berth for b, or null if none is free. */
 export function firstFit(b: Booking, grid: OccupancyGrid): number | null {
-  throw new Error('not implemented');
+  for (let i = 0; i < grid.capacity; i++) if (grid.isFree(i, b)) return i;
+  return null;
 }

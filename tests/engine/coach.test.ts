@@ -27,6 +27,8 @@ describe('coach', () => {
     expect(() => g.isFree(2, bk(0, 1))).toThrow();
     expect(() => g.isFree(-1, bk(0, 1))).toThrow();
     expect(() => g.isFree(0, bk(0, 5))).toThrow();
+    expect(() => g.occupant(0, 4)).toThrow();
+    expect(g.occupant(0, 3)).toBeNull();
     expect(() => new OccupancyGrid(-1, 4)).toThrow();
     expect(() => new OccupancyGrid(2, 0)).toThrow();
   });

@@ -27,6 +27,13 @@ export class OccupancyGrid {
     for (let j = b.from; j < b.to; j++) row[j] = b.id;
   }
 
+  /** Booking id on row `index` at segment j, or null. */
+  occupant(index: number, j: number): number | null {
+    const row = this.row(index);
+    if (!Number.isInteger(j) || j < 0 || j >= this.n) throw new Error(`Segment ${j} is outside [0, ${this.n})`);
+    return row[j];
+  }
+
   private row(index: number): (number | null)[] {
     if (!Number.isInteger(index) || index < 0 || index >= this.capacity) {
       throw new Error(`Row ${index} is outside [0, ${this.capacity})`);

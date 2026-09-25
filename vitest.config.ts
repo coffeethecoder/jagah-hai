@@ -7,6 +7,7 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       include: ['src/engine/**/*.ts'],
+      thresholds: { lines: 90 },
     },
   },
 });
