@@ -1,21 +1,18 @@
 // Runs a request stream through a strategy and records the event log.
-import type { Assignment, Booking, CoachConfig, Outcome, Route, RunResult, StepEvent } from './types';
+import type { Assignment, Booking, CoachConfig, Outcome, Pool, Route, RunResult, StepEvent } from './types';
 import { segmentCount } from './route';
 import { validateBooking } from './interval';
 import { LoadProfile } from './load';
 import { OccupancyGrid } from './coach';
 import { createRng } from './rng';
-import { certify } from './certify';
 import { computeMetrics } from './metrics';
 import { STRATEGY_TIER, TIER1_CHOOSERS } from './strategies';
 import { canAccept, chart } from './strategies/deferred';
-import { selectOptimum } from './strategies/offlineOptimum';
-import { estRepack } from './estRepack';
+import { certifyPools, offlineAssignment, poolCapacity } from './rac';
 
 function setup(requests: Booking[], route: Route, coach: CoachConfig): number {
   if (!Number.isInteger(coach.berths) || coach.berths < 1) throw new Error(`Coach needs at least 1 berth, got ${coach.berths}`);
-  // ponytail: RAC pool arrives in Phase 7 (SPEC 5); until then only r = 0 runs.
-  if (coach.racBerths !== 0) throw new Error('RAC berths are not supported until Phase 7');
+  if (!Number.isInteger(coach.racBerths) || coach.racBerths < 0) throw new Error(`RAC berths must be an integer ≥ 0, got ${coach.racBerths}`);
   const n = segmentCount(route);
   const ids = new Set<number>();
   for (const b of requests) {
@@ -26,50 +23,53 @@ function setup(requests: Booking[], route: Route, coach: CoachConfig): number {
   return n;
 }
 
+/** Tier 1 and 2 (SPEC 4.3, 4.4, 5.1): confirmed pool first, then RAC, else waitlisted with a certificate. */
 export function runOnline(strategy: 'first-fit' | 'best-fit' | 'random-fit' | 'deferred',
   requests: Booking[], route: Route, coach: CoachConfig, seed: number): RunResult {
   const n = setup(requests, route, coach);
-  const k = coach.berths;
   const rng = createRng(seed);
-  const grid = new OccupancyGrid(k, n);
-  const load = new LoadProfile(n);
-  const inPool: Booking[] = [];   // seated (Tier 1) or pending (Tier 2) in the confirmed pool
+  const pools: Pool[] = coach.racBerths > 0 ? ['confirmed', 'rac'] : ['confirmed'];
+  const grid = { confirmed: new OccupancyGrid(coach.berths, n), rac: new OccupancyGrid(poolCapacity(coach, 'rac'), n) };
+  const load = { confirmed: new LoadProfile(n), rac: new LoadProfile(n) };
+  const inPool: Record<Pool, Booking[]> = { confirmed: [], rac: [] }; // seated (Tier 1) or pending (Tier 2)
   const assignment: Assignment = { confirmed: {}, rac: {} };
   const events: StepEvent[] = [];
-  const noRac = new Array<number>(n).fill(0);
 
   for (const b of requests) {
-    let outcome: Outcome;
-    if (strategy === 'deferred') {
-      outcome = canAccept(b, load, k)
-        ? { kind: 'pending', pool: 'confirmed' }
-        : { kind: 'rejected', certificate: certify(b, 'confirmed', inPool, k, n) };
-    } else {
-      const index = TIER1_CHOOSERS[strategy](b, grid, rng);
-      if (index === null) {
-        outcome = { kind: 'rejected', certificate: certify(b, 'confirmed', inPool, k, n) };
+    let outcome: Outcome | null = null;
+    for (const pool of pools) {
+      if (strategy === 'deferred') {
+        if (canAccept(b, load[pool], poolCapacity(coach, pool))) outcome = { kind: 'pending', pool };
       } else {
-        grid.place(index, b);
-        assignment.confirmed[b.id] = index;
-        outcome = { kind: 'placed', pool: 'confirmed', index };
+        const index = TIER1_CHOOSERS[strategy](b, grid[pool], rng);
+        if (index !== null) {
+          grid[pool].place(index, b);
+          assignment[pool][b.id] = index;
+          outcome = { kind: 'placed', pool, index };
+        }
+      }
+      if (outcome) {
+        load[pool].add(b);
+        inPool[pool].push(b);
+        break;
       }
     }
-    if (outcome.kind !== 'rejected') {
-      load.add(b);
-      inPool.push(b);
-    }
-    events.push({ booking: b, outcome, confirmedLoad: load.toArray(), racLoad: noRac.slice() });
+    outcome ??= { kind: 'rejected', certificate: certifyPools(b, inPool.confirmed, inPool.rac, coach, n) };
+    events.push({ booking: b, outcome, confirmedLoad: load.confirmed.toArray(), racLoad: load.rac.toArray() });
   }
 
-  if (strategy === 'deferred') assignment.confirmed = chart(inPool, k);
+  if (strategy === 'deferred') {
+    assignment.confirmed = chart(inPool.confirmed, coach.berths);
+    assignment.rac = chart(inPool.rac, poolCapacity(coach, 'rac'));
+  }
 
   const partial = { strategy, tier: STRATEGY_TIER[strategy], events, assignment };
   return { ...partial, metrics: computeMetrics(partial, requests, coach, n) };
 }
 
+/** Tier 3 (SPEC 4.5, 5.1): the most passengers that fit, all known in advance. */
 export function runOfflineOptimum(requests: Booking[], route: Route, coach: CoachConfig): RunResult {
   const n = setup(requests, route, coach);
-  const assignment: Assignment = { confirmed: estRepack(selectOptimum(requests, coach.berths), coach.berths), rac: {} };
-  const partial = { strategy: 'offline-optimum' as const, tier: 3 as const, events: [], assignment };
+  const partial = { strategy: 'offline-optimum' as const, tier: 3 as const, events: [], assignment: offlineAssignment(requests, coach) };
   return { ...partial, metrics: computeMetrics(partial, requests, coach, n) };
 }

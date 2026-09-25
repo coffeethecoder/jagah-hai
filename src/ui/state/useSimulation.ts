@@ -2,7 +2,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   generateDemand, parseRoute, runOfflineOptimum, runOnline, selectOptimum,
-  type Booking, type DemandConfig, type Route, type RunResult, type StepEvent,
+  type Booking, type DemandConfig, type Pool, type Route, type RunResult, type StepEvent,
 } from '../../engine';
 
 export type OnlineStrategy = 'first-fit' | 'best-fit' | 'random-fit' | 'deferred';
@@ -15,6 +15,7 @@ export const STRATEGY_NAME: Record<RunResult['strategy'], string> = {
 export interface SimConfig {
   routeId: string;
   berths: number;
+  racBerths: number;
   scenario: DemandConfig['scenario'];
   tatkal: boolean;
   tatkalFraction: number;
@@ -25,18 +26,22 @@ export interface SimConfig {
   compareWith: OnlineStrategy;
 }
 
+/** A passenger on the chart: a berth (confirmed) or a slot (RAC). */
+export interface Seat { booking: Booking; pool: Pool; index: number }
+
 export interface SimView {
   strategy: OnlineStrategy;
   step: number;                        // requests decided so far
   total: number;
   current: StepEvent | null;           // the request decided at this step
-  seated: { booking: Booking; berth: number }[];
+  seated: Seat[];
   pending: Booking[];                  // Tier 2: accepted, no berth yet
   charting: boolean;                   // Tier 2: "Prepare chart" pressed, placement under way or done
   charted: boolean;                    // Tier 2: every accepted booking has a berth
   load: number[];
+  racLoad: number[];
   rejections: StepEvent[];             // in arrival order
-  counts: { seated: number; waitlisted: number; forced: number; strategyInduced: number };
+  counts: { seated: number; rac: number; waitlisted: number; forced: number; strategyInduced: number };
   /** Seated so far ÷ the most any seating could fit for the requests so far (Tier 3 on the prefix). */
   ratio: number | null;
 }
@@ -51,6 +56,7 @@ const CHART_MS = 2000;
 const DEFAULT_CONFIG: SimConfig = {
   routeId: ROUTES.find((r) => r.id === 'demo-line')?.id ?? ROUTES[0].id,
   berths: narrow ? 16 : 72,
+  racBerths: 0,
   scenario: 'mixed',
   tatkal: false,
   tatkalFraction: 0.2,
@@ -65,7 +71,8 @@ const byStart = (a: Booking, b: Booking) => a.from - b.from || a.to - b.to || a.
 
 /** Deferred bookings in the order charting places them: EST order, earliest boarding first. */
 export const chartOrder = (run: RunResult, step: number) =>
-  run.events.slice(0, step).filter((e) => e.outcome.kind === 'pending').map((e) => e.booking).sort(byStart);
+  run.events.slice(0, step).flatMap((e) => (e.outcome.kind === 'pending' ? [{ booking: e.booking, pool: e.outcome.pool }] : []))
+    .sort((x, y) => byStart(x.booking, y.booking));
 
 /** `best`: the most any seating could fit for the first `step` requests (Tier 3 on the prefix). */
 function buildView(run: RunResult, strategy: OnlineStrategy, requests: Booking[], step: number, best: number, n: number, chartPlaced: number | null): SimView {
@@ -79,15 +86,16 @@ function buildView(run: RunResult, strategy: OnlineStrategy, requests: Booking[]
   if (run.tier === 2) {
     const order = chartOrder(run, step);
     const placed = charting ? Math.min(chartPlaced, order.length) : 0;
-    seated = order.slice(0, placed).map((b) => ({ booking: b, berth: run.assignment.confirmed[b.id] }));
-    pending = order.slice(placed).sort((a, b) => a.id - b.id);
+    seated = order.slice(0, placed).map(({ booking, pool }) => ({ booking, pool, index: run.assignment[pool][booking.id] }));
+    pending = order.slice(placed).map((x) => x.booking).sort((a, b) => a.id - b.id);
   } else {
-    seated = events.flatMap((e) => (e.outcome.kind === 'placed' ? [{ booking: e.booking, berth: e.outcome.index }] : []));
+    seated = events.flatMap((e) => (e.outcome.kind === 'placed' ? [{ booking: e.booking, pool: e.outcome.pool, index: e.outcome.index }] : []));
   }
 
   const forced = rejections.filter((e) => e.outcome.kind === 'rejected' && e.outcome.certificate.kind === 'forced').length;
   const counts = {
     seated: step - rejections.length, // Tier 2 acceptances are guaranteed a berth at charting (Theorem 1)
+    rac: events.filter((e) => e.outcome.kind !== 'rejected' && e.outcome.pool === 'rac').length,
     waitlisted: rejections.length,
     forced,
     strategyInduced: rejections.length - forced,
@@ -99,6 +107,7 @@ function buildView(run: RunResult, strategy: OnlineStrategy, requests: Booking[]
     seated, pending, charting,
     charted: run.tier === 2 && charting && pending.length === 0,
     load: events[step - 1]?.confirmedLoad ?? new Array<number>(n).fill(0),
+    racLoad: events[step - 1]?.racLoad ?? new Array<number>(n).fill(0),
     rejections, counts,
     ratio: best > 0 ? counts.seated / best : null,
   };
@@ -114,7 +123,7 @@ export function useSimulation() {
 
   const route = ROUTES.find((r) => r.id === config.routeId) ?? ROUTES[0];
   const n = route.stations.length - 1;
-  const coach = useMemo(() => ({ berths: config.berths, racBerths: 0 }), [config.berths]);
+  const coach = useMemo(() => ({ berths: config.berths, racBerths: config.racBerths }), [config.berths, config.racBerths]);
 
   const requests = useMemo(() => generateDemand(route, coach, {
     scenario: config.scenario,
@@ -133,7 +142,8 @@ export function useSimulation() {
   const total = requests.length;
   const compareWith = config.compareWith === config.strategy ? ONLINE.find((s) => s !== config.strategy)! : config.compareWith;
   // O(step²); kept apart from the views so charting frames do not recompute it.
-  const best = useMemo(() => selectOptimum(requests.slice(0, step), config.berths).length, [requests, step, config.berths]);
+  const places = config.berths + 2 * config.racBerths;
+  const best = useMemo(() => selectOptimum(requests.slice(0, step), places).length, [requests, step, places]);
   const view = useMemo(
     () => buildView(runs[config.strategy], config.strategy, requests, step, best, n, chartPlaced),
     [runs, config.strategy, requests, step, best, n, chartPlaced],

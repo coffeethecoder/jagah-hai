@@ -2,7 +2,7 @@ import type { SimView } from '../state/useSimulation';
 import { ratio } from '../lib/format';
 import s from '../styles/ui.module.css';
 
-export function MetricsStrip({ view }: { view: SimView }) {
+export function MetricsStrip({ view, racBerths }: { view: SimView; racBerths: number }) {
   const { counts } = view;
   const stat = (label: React.ReactNode, value: string | number, title: string) => (
     <div className={s.stat} title={title}>
@@ -15,6 +15,7 @@ export function MetricsStrip({ view }: { view: SimView }) {
   return (
     <div className={s.strip} aria-live="off">
       {stat(<>{swatch('var(--signal-green)')}Seated</>, counts.seated, 'Passengers with a berth (or, for Deferred, guaranteed one at charting)')}
+      {racBerths > 0 && stat('of which RAC', counts.rac, 'Seated in RAC places, two passengers to a side-lower berth')}
       {stat('Waitlisted', counts.waitlisted, 'Requests turned away so far')}
       {stat(<>{swatch('var(--signal-red)')}Full here</>, counts.forced, 'Turned away because some segment of the journey was full: no seating could fit them')}
       {stat(<>{swatch('var(--signal-amber)')}Assignment</>, counts.strategyInduced, 'Turned away although every segment had room: earlier berth choices blocked them')}

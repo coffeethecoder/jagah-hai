@@ -6,16 +6,16 @@ import { segmentName } from '../lib/format';
 const H = 88;   // bar area height
 const TOP = 18; // room for the capacity label and values
 
-export function LoadProfile({ route, load, capacity, colW }: { route: Route; load: number[]; capacity: number; colW: number }) {
+export function LoadProfile({ route, load, capacity, colW, label = 'Load' }: { route: Route; load: number[]; capacity: number; colW: number; label?: string }) {
   const n = load.length;
   const x = segmentAt(colW);
   const width = x(n) + 1;
   const barH = (v: number) => (v / capacity) * H;
 
   return (
-    <svg width={width} height={TOP + H + 20} role="img" aria-label={`Load per segment, capacity ${capacity}`}
+    <svg width={width} height={TOP + H + 20} role="img" aria-label={`${label} per segment, capacity ${capacity}`}
       style={{ fontFamily: 'var(--font)', fontSize: 11, fontVariantNumeric: 'tabular-nums' }}>
-      <text x={0} y={TOP + 4} style={{ fill: 'var(--ink)', fontWeight: 600 }}>Load</text>
+      <text x={0} y={TOP + 4} style={{ fill: 'var(--ink)', fontWeight: 600 }}>{label}</text>
       <text x={0} y={TOP + 17} style={{ fill: 'var(--ink)' }}>of {capacity}</text>
 
       {load.map((v, j) => {

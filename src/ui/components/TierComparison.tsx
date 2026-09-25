@@ -4,9 +4,9 @@ import { ONLINE, STRATEGY_NAME, type OnlineStrategy } from '../state/useSimulati
 import { ratio } from '../lib/format';
 import s from '../styles/ui.module.css';
 
-interface Props { runs: Record<OnlineStrategy | 'offline-optimum', RunResult>; current: OnlineStrategy; total: number }
+interface Props { runs: Record<OnlineStrategy | 'offline-optimum', RunResult>; current: OnlineStrategy; total: number; racBerths: number }
 
-export function TierComparison({ runs, current, total }: Props) {
+export function TierComparison({ runs, current, total, racBerths }: Props) {
   const optimum = runs['offline-optimum'].metrics.seated;
   const deferred = runs.deferred.metrics.seated;
   const rows = [...ONLINE, 'offline-optimum' as const].map((id) => ({ id, run: runs[id] }));
@@ -19,7 +19,7 @@ export function TierComparison({ runs, current, total }: Props) {
       <div className={s.tableWrap}><table className={s.table}>
         <thead>
           <tr>
-            <th>Strategy</th><th className={s.n}>Tier</th><th className={s.n}>Seated</th><th className={s.n}>Assignment</th>
+            <th>Strategy</th><th className={s.n}>Tier</th><th className={s.n}>Seated</th>{racBerths > 0 && <th className={s.n}>of which RAC</th>}<th className={s.n}>Assignment</th>
             <th className={s.n}>Performance ratio</th><th className={s.n}>Lost to fragmentation</th>
           </tr>
         </thead>
@@ -28,7 +28,7 @@ export function TierComparison({ runs, current, total }: Props) {
             <tr key={id} className={id === current ? s.current : undefined}>
               <td>{STRATEGY_NAME[id]}</td>
               <td className={s.n}>{run.tier}</td>
-              <td className={s.n}>{run.metrics.seated}</td>
+              <td className={s.n}>{run.metrics.seated}</td>{racBerths > 0 && <td className={s.n}>{run.metrics.rac}</td>}
               <td className={s.n}>{run.tier === 3 ? '' : run.metrics.strategyInduced}</td>
               <td className={s.n}>{ratio(optimum > 0 ? run.metrics.seated / optimum : null)}</td>
               <td className={s.n}>{run.tier === 1 ? deferred - run.metrics.seated : ''}</td>

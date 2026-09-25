@@ -47,6 +47,7 @@ describe('simulate', () => {
     expect(() => runOnline('first-fit', toBookings([{ from: 0, to: 4 }]), route, { berths: 1, racBerths: 0 }, 1)).toThrow();
     expect(() => runOnline('first-fit', [...ok, ...ok], route, { berths: 1, racBerths: 0 }, 1)).toThrow();
     expect(() => runOnline('first-fit', ok, route, { berths: 0, racBerths: 0 }, 1)).toThrow();
-    expect(() => runOfflineOptimum(ok, route, { berths: 1, racBerths: 2 })).toThrow(); // RAC arrives in Phase 7
+    expect(() => runOfflineOptimum(ok, route, { berths: 1, racBerths: -1 })).toThrow();
+    expect(() => runOnline('deferred', ok, route, { berths: 1, racBerths: 0.5 }, 1)).toThrow();
   });
 });

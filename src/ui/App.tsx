@@ -49,14 +49,15 @@ export function App() {
           {STRATEGY_NAME[v.strategy]}: {v.counts.seated} seated, {v.counts.waitlisted} waitlisted ({v.counts.strategyInduced} assignment)
         </h3>
       )}
-      <CoachGrid route={route} berths={config.berths} colW={colW} seated={v.seated} current={v.current}
+      <CoachGrid route={route} berths={config.berths} racBerths={config.racBerths} colW={colW} seated={v.seated} current={v.current}
         animateEntry={v.charting}
         highlightSegment={isPrimary && forced ? forced.segment : null}
         emphasis={isPrimary && forced ? new Set(forced.occupants) : null} />
       <LoadProfile route={route} load={v.load} capacity={config.berths} colW={colW} />
+      {config.racBerths > 0 && <LoadProfile route={route} load={v.racLoad} capacity={2 * config.racBerths} colW={colW} label="RAC" />}
       {/* Below the chart, so grids line up row for row in compare mode. */}
       {v.strategy === 'deferred' && (
-        <ChartingView route={route} colW={colW} accepted={chartOrder(runs.deferred, v.step)} pending={v.pending}
+        <ChartingView route={route} colW={colW} accepted={chartOrder(runs.deferred, v.step).map((x) => x.booking)} pending={v.pending}
           bookingClosed={v.step === v.total} charting={v.charting} onPrepare={sim.prepareChart} />
       )}
     </div>
@@ -65,7 +66,7 @@ export function App() {
   return (
     <div className={s.app}>
       <Header route={route} first={first} last={last}>
-        {config.berths} berths, {SCENARIO_WORDS[config.scenario]}, demand {config.demandFactor.toFixed(1)} times capacity
+        {config.berths} berths{config.racBerths > 0 ? ` and ${config.racBerths} RAC` : ''}, {SCENARIO_WORDS[config.scenario]}, demand {config.demandFactor.toFixed(1)} times capacity
         {config.tatkal ? `, tatkal surge ${Math.round(config.tatkalFraction * 100)}%` : ''}, seed {config.seed}
       </Header>
 
@@ -79,8 +80,8 @@ export function App() {
       </aside>
 
       <main className={s.main}>
-        <MetricsStrip view={view} />
-        <RequestTicker route={route} view={view} berths={config.berths} />
+        <MetricsStrip view={view} racBerths={config.racBerths} />
+        <RequestTicker route={route} view={view} coach={{ berths: config.berths, racBerths: config.racBerths }} />
         <div className={s.chartScroll} ref={chartRef}>
           <div className={s.boards}>{boards.map((v, i) => board(v, i === 0))}</div>
         </div>
@@ -89,10 +90,10 @@ export function App() {
       <div className={s.bottom}>
         <div className={s.panel} ref={proofRef}>
           <RejectionList route={route} rejections={view.rejections} selected={selected?.booking.id ?? null} onSelect={sim.select} />
-          <ProofPanel route={route} berths={config.berths} event={selected} requests={requests} colW={columnWidth(proofWidth, n)} />
+          <ProofPanel route={route} coach={{ berths: config.berths, racBerths: config.racBerths }} event={selected} requests={requests} colW={columnWidth(proofWidth, n)} />
         </div>
         <div className={s.panel}>
-          <TierComparison runs={runs} current={config.strategy} total={view.total} />
+          <TierComparison runs={runs} current={config.strategy} total={view.total} racBerths={config.racBerths} />
           <UnboundedPanel requests={requests} n={n} berths={config.berths} />
         </div>
       </div>

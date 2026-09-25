@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { OccupancyGrid, berthLabel } from '../../src/engine/coach';
+import { OccupancyGrid, berthLabel, racSlotLabel } from '../../src/engine/coach';
 import type { Booking } from '../../src/engine/types';
 
 const bk = (from: number, to: number, id = 0): Booking => ({ id, from, to, arrival: id, isTatkal: false });
@@ -43,5 +43,10 @@ describe('coach', () => {
     expect(berthLabel(8)).toBe('9 LB');
     expect(berthLabel(71)).toBe('72 SU');
     expect(() => berthLabel(-1)).toThrow();
+  });
+
+  it('RAC slots pair up on RAC berths', () => {
+    expect([0, 1, 2, 3].map(racSlotLabel)).toEqual(['RAC 1a', 'RAC 1b', 'RAC 2a', 'RAC 2b']);
+    expect(() => racSlotLabel(-1)).toThrow();
   });
 });

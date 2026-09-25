@@ -221,7 +221,7 @@ RAC (Reservation Against Cancellation): two passengers share one side-lower bert
 Per tier:
 - **Tier 1:** apply the strategy's rule (FF/BF/RF) to the confirmed pool; if no berth is free, apply the same rule to the RAC slots.
 - **Tier 2:** accept as confirmed if confirmed load stays `≤ k` on the range; else as RAC if RAC load stays `≤ 2r`; else reject. At charting, run EST separately on each pool (`k` berths, `2r` slots).
-- **Tier 3:** maximise total seated with combined capacity `k + 2r` (Algorithm 4.5 with capacity `k + 2r`); then, within the chosen set, run Algorithm 4.5 again with capacity `k` to pick the confirmed passengers; the rest are RAC. Report the total as the primary metric; the confirmed/RAC split is secondary.
+- **Tier 3:** maximise total seated with combined capacity `k + 2r` (Algorithm 4.5 with capacity `k + 2r`); then seat the chosen set with Algorithm EST on all `k + 2r` places: places `0 … k−1` are the confirmed berths, the rest are RAC slots. Report the total as the primary metric; the confirmed/RAC split is secondary. *(Amended 2026-09-25: the original rule, "run Algorithm 4.5 again with capacity `k` to pick the confirmed passengers; the rest are RAC", can leave more than `2r` passengers on a segment of the RAC pool. See `docs/DECISIONS.md`.)*
 
 ### 5.2 Lemma 2 (RAC reduction) — for the paper
 

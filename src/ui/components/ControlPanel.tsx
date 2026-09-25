@@ -39,6 +39,13 @@ export function ControlPanel({ config, routes, onChange }: Props) {
       </label>
 
       <label className={s.field}>
+        RAC berths (two passengers share each)
+        <select value={config.racBerths} onChange={(e) => onChange({ racBerths: Number(e.target.value) })}>
+          {Array.from({ length: 10 }, (_, r) => <option key={r} value={r}>{r === 0 ? 'None' : `${r} (${2 * r} places)`}</option>)}
+        </select>
+      </label>
+
+      <label className={s.field}>
         Scenario
         <select value={config.scenario} onChange={(e) => onChange({ scenario: e.target.value as SimConfig['scenario'] })}>
           {SCENARIOS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
