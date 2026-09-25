@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import fc from 'fast-check';
-import { createRng } from '../../src/engine/rng';
+import { createRng, deriveSeed } from '../../src/engine/rng';
 
 const take = (seed: number, count: number) => {
   const rng = createRng(seed);
@@ -46,6 +46,17 @@ describe('rng', () => {
     const rng = createRng(1);
     expect(() => rng.int(0)).toThrow();
     expect(() => rng.int(2.5)).toThrow();
+  });
+
+  it('deriveSeed gives deterministic, distinct integer sub-stream seeds', () => {
+    fc.assert(fc.property(fc.integer(), (seed) => {
+      const a = deriveSeed(seed, 1);
+      expect(Number.isInteger(a)).toBe(true);
+      expect(a).toBe(deriveSeed(seed, 1));
+      expect(a).not.toBe(deriveSeed(seed, 2));
+      expect(take(a, 3)).not.toEqual(take(seed, 3));
+    }));
+    expect(() => deriveSeed(1.5, 1)).toThrow();
   });
 
   it('rejects a non-integer seed', () => {

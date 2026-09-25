@@ -29,3 +29,25 @@ Section 16 said to commit after each phase. Changed so that the user makes every
 - **Forced certificates name the first full segment** on the booking's range (lowest index), via `argmaxOnRange`.
 - **Coverage threshold on:** `vitest.config.ts` fails `npm run coverage` below 90% line coverage of `src/engine`.
 - **Extra test file** not in SPEC 11: `metrics.test.ts`.
+
+## 2026-09-25 — Phase 4 choices
+- **Tatkal share is by volume, not by count.** SPEC 8.2 calls `fraction` a share of "total requests", but the total is only known once the volume target is met, and tatkal uses a different length profile. So base requests are drawn until their passenger-segments reach (1 − f)·ρ·k·n, and tatkal requests until theirs reach f·ρ·k·n. Total volume stays ≈ ρ·k·n with tatkal on or off, so ρ means the same thing in both arms.
+- **Demand uses its own RNG sub-stream:** `createRng(deriveSeed(seed, 1))`. Experiments pass the same seed to demand and to random-fit; without this, random-fit's berth picks would replay the exact draws that chose the first requests' origins. `deriveSeed` (murmur3 finaliser) is in `rng.ts`.
+- **RNG draw order per request:** origin, then (for `mixed`) the short/long coin, then trip length. Base requests are generated, then shuffled, then the tatkal block is generated.
+- **Demand output is pinned** in `demand.test.ts` (demo-line, k = 72, mixed, ρ = 1, seed 1, first 5 requests).
+- **EPR is blank** in `runs.csv` when the optimum seats nobody (only possible with no requests).
+- **`summary.csv` extras:** `ffOverOmega` (for figure F5). Paired differences are named `seatedMinusDeferred` and `seatedMinusOptimum` (strategy minus reference, same seed), so fragLoss = −seatedMinusDeferred for Tier 1 rows and fcfsLoss = −seatedMinusOptimum for the Deferred row. sd and CI are blank when N < 2.
+- **`meta.json` also records `gitDirty`** (uncommitted changes when the run started) and the run count.
+- **Extra test file** not in SPEC 11: `tests/experiments/experiments.test.ts`. `run.ts` and `aggregate.ts` export their logic and only run the CLI when invoked directly.
+- **`main.json` cannot run until Phase 7:** it includes `racBerths: 9`, and the engine rejects r > 0 until RAC is built.
+
+## 2026-09-25 — Phase 5 choices (UI core)
+- **Strategy select lists the four online strategies only.** The offline optimum has no event log to play; it appears in TierComparison (Phase 6).
+- **Controls left for later phases:** RAC berths `r` (Phase 7; the engine rejects r > 0 until then) and the Compare toggle (Phase 6).
+- **Berths control is a select (72 sleeper, 16 mini)**, not a free number.
+- **Deferred during playback:** acceptances count as Seated (charting always succeeds, Theorem 1). The grid stays empty with a pending count until the last request, then shows the EST chart. The hatched pending pool and the charting animation are ChartingView (Phase 6).
+- **Performance ratio during playback** = seated so far ÷ offline optimum on the requests so far (Tier 3 on the prefix). At the end it equals EPR.
+- **Same seed for demand and strategy**, as in `experiments/run.ts`, so the UI's final counters equal the matching `runs.csv` row.
+- **Ghost bar** shows the request decided at the current step, labelled with its outcome (Seated / Pending / Full here / Assignment), since playback moves in whole steps.
+- **Column width follows the container** (40–120 px per segment); the chart scrolls sideways inside its own box, never the page. SVG only; the canvas fallback above 5000 cells waits for long real routes.
+- **One shared CSS module** (`src/ui/styles/ui.module.css`) instead of one per component.

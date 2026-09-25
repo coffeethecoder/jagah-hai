@@ -12,6 +12,19 @@ export interface Rng {
   weighted(weights: number[]): number;
 }
 
+/**
+ * A separate integer seed for a numbered sub-stream (e.g. demand vs random-fit), so one run seed
+ * never feeds two consumers the same sequence. Integer hash mix (murmur3 finaliser).
+ */
+export function deriveSeed(seed: number, stream: number): number {
+  if (!Number.isInteger(seed) || !Number.isInteger(stream)) throw new Error(`deriveSeed needs integers, got ${seed}, ${stream}`);
+  let h = Math.imul(seed ^ Math.imul(stream + 1, 0x9e3779b9), 0x85ebca6b);
+  h ^= h >>> 13;
+  h = Math.imul(h, 0xc2b2ae35);
+  h ^= h >>> 16;
+  return h | 0;
+}
+
 export function createRng(seed: number): Rng {
   if (!Number.isInteger(seed)) throw new Error(`Seed must be an integer, got ${seed}`);
   let a = seed | 0;
