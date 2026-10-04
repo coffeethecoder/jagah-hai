@@ -1,0 +1,20 @@
+{
+  "id": "26101-vande-bharat",
+  "name": "Vande Bharat Pune-Ajni (26101)",
+  "trainNumber": "26101",
+  "source": "indianrail.gov.in train schedule, accessed 2026-09-26; stop order verified the same day against NTES (same 12 stations, same order). ANK Ankai (Via Station) is not a stop; NTES does not list it. km from indianrail; NTES is 1 km lower to 5 km higher. Chair car only (EC, CC): no berths or RAC on the real train.",
+  "stations": [
+    { "code": "PUNE", "name": "Pune Jn", "km": 0, "weight": 3 },
+    { "code": "DDCC", "name": "Daund Chord Lin", "km": 73, "weight": 1 },
+    { "code": "ANG", "name": "Ahilyanagar", "km": 154, "weight": 1 },
+    { "code": "KPG", "name": "Kopargaon", "km": 265, "weight": 1 },
+    { "code": "MMR", "name": "Manmad Jn", "km": 307, "weight": 3 },
+    { "code": "JL", "name": "Jalgaon Jn", "km": 467, "weight": 1 },
+    { "code": "BSL", "name": "Bhusaval Jn", "km": 491, "weight": 3 },
+    { "code": "SEG", "name": "Shegaon", "km": 594, "weight": 1 },
+    { "code": "AK", "name": "Akola Jn", "km": 631, "weight": 3 },
+    { "code": "BD", "name": "Badnera Jn", "km": 710, "weight": 1 },
+    { "code": "WR", "name": "Wardha Jn", "km": 805, "weight": 1 },
+    { "code": "AJNI", "name": "Ajni", "km": 881, "weight": 3 }
+  ]
+}

@@ -1,3 +1,5 @@
+import { readdirSync, readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { parseRoute, segmentCount } from '../../src/engine/route';
 import demo from '../../data/routes/demo-line.json';
@@ -13,6 +15,17 @@ describe('route', () => {
     expect(route.stations.map((s) => s.code)).toEqual(['AAA', 'BBB', 'CCC', 'DDD', 'EEE', 'FFF', 'GGG', 'HHH', 'III', 'JJJ']);
     expect(segmentCount(route)).toBe(9);
     expect(route.stations.filter((s) => s.weight === 3).map((s) => s.code)).toEqual(['AAA', 'EEE', 'JJJ']);
+  });
+
+  it('every shipped route file is valid and named after its id', () => {
+    const dir = 'data/routes';
+    const files = readdirSync(dir).filter((f) => f.endsWith('.json'));
+    expect(files.length).toBeGreaterThan(1);
+    for (const f of files) {
+      const route = parseRoute(JSON.parse(readFileSync(join(dir, f), 'utf8')));
+      expect(`${route.id}.json`).toBe(f);
+      expect(segmentCount(route)).toBeGreaterThanOrEqual(2);
+    }
   });
 
   it('km and weight are optional', () => {

@@ -1,6 +1,6 @@
 {
   "name": "main",
-  "routes": ["demo-line"],
+  "routes": ["demo-line", "12137-punjab-mail", "22503-vivek-express", "26101-vande-bharat"],
   "berths": [72],
   "racBerths": [0, 9],
   "scenarios": ["short", "long", "mixed", "uniform"],
