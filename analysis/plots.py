@@ -95,7 +95,8 @@ def line(ax, d, strategy, col, band=True, **kw):
 
 
 def save(fig, name):
-    fig.savefig(OUT / f"{name}.pdf")
+    # No creation timestamp, so the same data always gives byte-identical PDFs (no spurious git diffs).
+    fig.savefig(OUT / f"{name}.pdf", metadata={"CreationDate": None})
     plt.close(fig)
     print(f"wrote analysis/figures/{name}.pdf")
 

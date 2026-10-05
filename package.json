@@ -9,7 +9,8 @@
     "test": "vitest run",
     "coverage": "vitest run --coverage",
     "experiment": "tsx experiments/run.ts",
-    "aggregate": "tsx experiments/aggregate.ts"
+    "aggregate": "tsx experiments/aggregate.ts",
+    "export-findings": "tsx experiments/exportFindings.ts"
   },
   "dependencies": {
     "react": "^18.3.1",

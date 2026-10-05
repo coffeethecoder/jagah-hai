@@ -86,3 +86,36 @@ Section 16 said to commit after each phase. Changed so that the user makes every
 - **T1** is written as CSV (all scenarios), Markdown and LaTeX (mixed), by hand rather than with `pandas.to_markdown` / `to_latex`, which would add `tabulate` / `jinja2` as dependencies.
 - **MATH.md:** proofs of Lemma 1, Theorem 1, EST correctness (with Proposition 2.1: First-fit on start-sorted input uses exactly ω), optimality of Algorithm 4.5, Lemma 2 and Corollary 2.1 (RAC, with the amended EST split), and the Tier 2 / certificate / upper-bound consequences. The optimality proof uses the invariant "some optimal set avoids every evicted booking"; the simpler "agrees with the kept set" invariant is false (counterexample in the remark).
 - **Findings to report (from this run):** on the long real routes First-fit turns away 10–15% of requests as strategy-induced at ρ ≥ 1, yet Deferred seats only about 1–3 more passengers than First-fit, while the optimum seats 7–32 more than Deferred. The strategy-induced rate overstates the capacity lost to fragmentation (freed capacity is mostly reused by later passengers); first-come-first-served costs far more. Random-fit often has the highest EPR while using the least berth capacity, because EPR counts heads and random-fit turns away long journeys: report utilization beside seated.
+
+## 2026-10-05 — UI layout rearranged (user request: "the UI can be made a lot better")
+Deviation from the layout diagram in SPEC 13.3. Problems seen in use: the waitlist and proof panels sat below a chart about 1,000 px tall, so a proof and the chart it refers to were never visible together; Play was at the bottom of the sidebar; the counters scrolled away; the start screen was a blank grid with no legend.
+- **Three columns on wide windows (≥ 1400 px):** setup | chart | waitlist, proof, tier comparison and unbounded panel. The left and right columns stay in view while the chart scrolls. Below 1400 px, and in compare mode (two charts need the width), the right column moves under the chart as before. Below 1024 px everything stacks and nothing is pinned.
+- **Counters, playback and the current request are pinned** to the top of the chart column while it scrolls.
+- **Playback is a toolbar above the chart** (Play, Step, Jump to end, Reset, a progress bar, speed) instead of a sidebar section. The key hint moved to the bottom of Setup; buttons carry their key as a tooltip.
+- **The chart sits on a sheet** with a heading, a one-line explanation of rows, columns and bars, and a legend (seated, seated at this step, pending, RAC, full segment in a proof). An empty grid shows a help line ("Press Play to watch booking requests arrive", or the pending count for Deferred).
+- **Header** gained the project name and its one-line question.
+- **Tier table** headers shortened to fit the narrower column: "Ratio" and "Lost seats", both explained in the note under the table.
+- Unchanged: tokens (SPEC 13.2), colours and their meanings, every component's behaviour, and the engine.
+
+## 2026-10-05 — Full UI redesign (user request)
+The user asked for the interface to be rebuilt to the standard of a commercial product: "a hero with an appropriate background, different pages for different functions". This supersedes the visual direction, tokens and layout in SPEC 13.1–13.3 (component behaviour in 13.4 and the copy rules in 13.5 still hold). The engine is unchanged.
+- **Four pages, hash-routed, still a static site** (`src/ui/lib/router.tsx`, no router library): Overview (`#/`), Simulator (`#/simulator`), Findings (`#/findings`), Method (`#/method`). `App.tsx` is now the shell; the simulator moved to `src/ui/pages/Simulator.tsx`.
+- **Design system** (`tokens.css`): Instrument Serif for display type, Inter for the interface; navy, a brand blue for actions, white cards on a cool grey page. Green, amber and red keep their meanings (seated, waitlisted by assignment, waitlisted because full) and are not used as decoration. Strategies keep the validated chart colours used in the paper figures.
+- **Hero background is real output:** `HeroChart.tsx` runs the engine (Punjab Mail, random-fit, fixed seed) and draws that chart, with three stranded passengers in amber. Headline numbers on Overview and Findings are read from data, not typed in.
+- **`src/ui/data/findings.json`** carries the published numbers into the app, because `experiments/results/` is gitignored. It is written by `npm run export-findings -- --run experiments/results/main` (`experiments/exportFindings.ts`) and must be re-exported whenever the main experiment is re-run.
+- **Findings charts** are hand-drawn SVG (`Charts.tsx`): line and stacked-bar charts with a hover readout, a legend, and a "Show the numbers" table under each.
+- **Simulator:** setup is a card with grouped sections, a segmented coach toggle and one card per strategy (showing its tier); counters are stat tiles; playback and the current request share one bar; waitlist, proof and comparison are cards in the right column.
+- **Chart fixes found on long routes:** the berth-label column now stays in place while the chart scrolls sideways (each chart is a sticky label SVG plus a plot SVG, `ChartFrame`), and the terminus code is drawn after the last column so it no longer overlaps the code before it.
+- Amber chips and callouts now use dark text on a lighter amber; white on the old amber was below 3:1 contrast.
+
+## 2026-10-05 — Redesign, second pass (user feedback on the first)
+Feedback: headings looked cramped; the three "how it works" cards looked lonely; the colours were ordinary; too many text-filled rectangles. Changes:
+- **Display type: Newsreader** (roomy, Times-like proportions, optical sizes) replaces Instrument Serif, which is a condensed face and was the cause of the cramped look. Inter stays for the interface.
+- **Palette: deep aubergine, warm ivory, violet for actions,** cream for the primary button on dark surfaces. Chosen because violet does not sit near green, amber or red, which keep their meanings. `--navy` became `--night`; `--coach-blue` (chart structure) is now a plum slate but keeps its name for the chart components.
+- **Show, don't tell.** Explanatory paragraphs in cards were cut to a heading and a few words, and the rectangle was replaced where a picture says it better:
+  - Overview, "How the study works": a **route line** with four numbered stations and a dashed track (it runs down the page on phones).
+  - Method, the four syllabus concepts: a **drawn glyph** each (overlapping bars, a chain, bookings mapped to berth numbers, a small graph); a swipeable row on phones.
+  - Method, the three tiers: a **flow** whose connectors carry the seats gained at each step, read from the experiment data, with a bar showing their relative size.
+  - Method, RAC and verification: a strip of **facts led by a number**.
+  - Method, limits: **sticky notes**, one caveat each.
+- Copy across Overview and Method was shortened; no finding or caveat was dropped, only its wording.

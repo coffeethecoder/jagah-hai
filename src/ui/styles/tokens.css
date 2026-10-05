@@ -1,12 +1,51 @@
+/* Design tokens. Aubergine, ivory and violet (2026-10-05, docs/DECISIONS.md); supersedes the token list in SPEC 13.2. */
 :root {
-  --paper:        #F6F8FB;  /* cool chart-paper white (deliberately not cream) */
-  --ink:          #14213D;  /* navy ink for text */
-  --coach-blue:   #1F4E9A;  /* structure: headers, grid lines at low opacity, pending outlines */
-  --signal-green: #1E8449;  /* seated */
-  --signal-amber: #D68910;  /* strategy-induced rejection */
-  --signal-red:   #B03A2E;  /* forced rejection */
+  /* Surfaces and ink: warm ivory paper, aubergine ink */
+  --bg:         #F8F5EF;  /* page */
+  --surface:    #FFFEFB;  /* cards, the chart sheet */
+  --surface-2:  #F0EBE1;  /* quiet fills: tracks, table heads */
+  --line:       #E4DCCD;  /* hairlines */
+  --line-strong:#CFC5B4;  /* hover hairlines, dashed outlines */
+  --ink:        #1F1629;  /* text */
+  --ink-2:      #4D4459;  /* secondary text */
+  --ink-3:      #6E6579;  /* muted text, still 4.5:1 on --surface */
+  --night:      #1D1030;  /* hero and dark bands */
+  --night-2:    #2B1A47;
+  --on-night:   #D7CEE8;  /* body text on --night */
+  --on-night-2: #A99DC2;  /* muted text on --night */
 
-  --font: "Overpass", "Segoe UI", system-ui, sans-serif;  /* signage-derived face, one family */
-  --step--1: 0.833rem; --step-0: 1rem; --step-1: 1.2rem; --step-2: 1.44rem; --step-3: 1.728rem;
+  /* Brand: actions and links */
+  --brand:        #5B35C8;
+  --brand-strong: #46259F;
+  --brand-soft:   #EEE8FB;
+  --cream:        #FBF3DD;  /* the primary button on dark surfaces */
+
+  /* Signals carry meaning, never decoration: seated / waitlisted by assignment / waitlisted because full */
+  --signal-green: #1E8449;
+  --signal-amber: #D68910;
+  --signal-red:   #B03A2E;
+  --green-bright: #3CCB82;  /* the same meanings on dark surfaces */
+  --amber-bright: #F4B740;
+  --red-bright:   #F0705F;
+  --amber-ink:    #3B2A00;  /* text on amber */
+
+  /* Chart structure (station codes, grid lines). The names --coach-blue and --paper are kept for the chart components. */
+  --coach-blue: #4A3F6B;
+  --paper: var(--bg);
+
+  /* Sticky-note papers */
+  --note-yellow: #FFF1B8; --note-pink: #FBDCE6; --note-mint: #DBF0DF; --note-lilac: #E8DFF9; --note-peach: #FFE2CC;
+
+  --font: "Inter", "Segoe UI", system-ui, sans-serif;
+  --font-display: "Newsreader", "Times New Roman", Times, serif;
+  --step--1: 0.8125rem; --step-0: 0.9375rem; --step-1: 1.0625rem; --step-2: 1.375rem;
+  --step-3: 1.875rem; --step-4: 2.5rem; --step-5: 4.5rem;
+
   --space-1: 4px; --space-2: 8px; --space-3: 12px; --space-4: 16px; --space-6: 24px; --space-8: 32px;
+  --space-12: 48px; --space-16: 64px; --space-24: 96px;
+
+  --radius-sm: 6px; --radius: 10px; --radius-lg: 16px;
+  --shadow: 0 1px 2px rgba(31, 22, 41, 0.06), 0 8px 24px rgba(31, 22, 41, 0.08);
+  --content: 1180px;  /* reading width for the site pages */
+  --nav-h: 60px;
 }

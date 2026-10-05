@@ -22,14 +22,14 @@ export function RequestTicker({ route, view, coach }: { route: Route; view: SimV
       : <>Accepted for RAC, since confirmed berths are full on this journey. The place is assigned when the chart is prepared.</>;
   } else if (e.outcome.certificate.kind === 'forced') {
     outcome = (
-      <><span className={s.chip} style={{ background: 'var(--signal-red)' }}>Full here</span>{' '}
+      <><span className={`${s.chip} ${s.chipRed}`}>Full here</span>{' '}
         Waitlisted: segment {segmentName(route, e.outcome.certificate.segment)} already carried {coach.berths} passengers
         {coach.racBerths > 0 ? `, and the ${2 * coach.racBerths} RAC places were taken too` : ''}.</>
     );
   } else {
     const where = e.outcome.certificate.pool === 'confirmed' ? 'berth' : 'RAC place';
     outcome = (
-      <><span className={s.chip} style={{ background: 'var(--signal-amber)' }}>Assignment</span>{' '}
+      <><span className={`${s.chip} ${s.chipAmber}`}>Assignment</span>{' '}
         Waitlisted, although every segment of this journey had a free {where}. No single {where} was free end to end.</>
     );
   }

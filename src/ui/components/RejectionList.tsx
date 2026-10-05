@@ -22,8 +22,7 @@ export function RejectionList({ route, rejections, selected, onSelect }: Props) 
               const isForced = e.outcome.certificate.kind === 'forced';
               const label = isForced ? 'Full here' : 'Assignment';
               return (
-                <button key={e.booking.id} type="button" className={s.rejChip}
-                  style={{ background: isForced ? 'var(--signal-red)' : 'var(--signal-amber)' }}
+                <button key={e.booking.id} type="button" className={`${s.rejChip} ${isForced ? s.rejRed : s.rejAmber}`}
                   aria-pressed={selected === e.booking.id}
                   aria-label={`Booking ${e.booking.id}, ${journey(route, e.booking)}, ${label.toLowerCase()}`}
                   title={journey(route, e.booking)}

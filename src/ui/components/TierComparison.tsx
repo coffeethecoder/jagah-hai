@@ -20,7 +20,7 @@ export function TierComparison({ runs, current, total, racBerths }: Props) {
         <thead>
           <tr>
             <th>Strategy</th><th className={s.n}>Tier</th><th className={s.n}>Seated</th>{racBerths > 0 && <th className={s.n}>of which RAC</th>}<th className={s.n}>Assignment</th>
-            <th className={s.n}>Performance ratio</th><th className={s.n}>Lost to fragmentation</th>
+            <th className={s.n}>Ratio</th><th className={s.n}>Lost seats</th>
           </tr>
         </thead>
         <tbody>
@@ -40,7 +40,7 @@ export function TierComparison({ runs, current, total, racBerths }: Props) {
         Lost to first-come-first-served (optimum minus deferred): {optimum - deferred}.
       </p>
       <p className={s.hint}>
-        Lost to fragmentation is deferred minus that strategy: what assigning berths at booking time cost.
+        Ratio is seated divided by the optimum. Lost seats is deferred minus that strategy: what assigning berths at booking time cost (fragmentation).
         {negative.length > 0 && ` It is negative for ${negative.map((id) => STRATEGY_NAME[id]).join(' and ')} here: early waitlisting left room for more passengers later, which can happen on a single stream.`}
       </p>
     </div>

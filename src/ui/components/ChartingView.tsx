@@ -1,7 +1,7 @@
 // Tier 2: the pending pool (hatched, no berth numbers) and "Prepare chart", which places it with EST.
 import { useId, useMemo } from 'react';
 import type { Booking, Route } from '../../engine';
-import { HatchPattern, segmentAt, tooltip } from './CoachGrid';
+import { ChartFrame, HatchPattern, segmentAt, tooltip } from './CoachGrid';
 import { plural } from '../lib/format';
 import s from '../styles/ui.module.css';
 
@@ -51,17 +51,17 @@ export function ChartingView({ route, colW, accepted, pending, bookingClosed, ch
         </span>
       </div>
       {pending.length > 0 && (
-        <svg width={x(n) + 1} height={laneCount * laneH + 4} role="img"
-          aria-label={`Pending pool: ${pending.length} bookings without berth numbers`}>
+        <ChartFrame n={n} colW={colW} height={Math.max(laneCount * laneH + 4, 16)}
+          ariaLabel={`Pending pool: ${pending.length} bookings without berth numbers`}
+          labels={<text x={0} y={12} style={{ fill: 'var(--ink)', fontWeight: 600 }}>Pending</text>}>
           <defs><HatchPattern id={hatchId} /></defs>
-          <text x={0} y={12} style={{ fill: 'var(--ink)', fontWeight: 600, fontSize: 11, fontFamily: 'var(--font)' }}>Pending</text>
           {pending.map((b) => (
             <rect key={b.id} x={x(b.from) + 2} y={lanes.get(b.id)! * laneH + 2} width={(b.to - b.from) * colW - 4} height={laneH - 1}
               style={{ fill: `url(#${hatchId})`, stroke: 'var(--coach-blue)', strokeWidth: 0.5 }}>
               <title>{tooltip(route, b)}</title>
             </rect>
           ))}
-        </svg>
+        </ChartFrame>
       )}
     </div>
   );

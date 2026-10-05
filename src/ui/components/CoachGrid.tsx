@@ -1,6 +1,6 @@
 // The reservation chart: berths down the side, boarding stations across the top, journeys as bars.
 // RAC berths sit below the confirmed berths: each is one row split into two half-height slots by a dashed divider.
-import { useId } from 'react';
+import { useId, type ReactNode } from 'react';
 import { berthLabel, type Booking, type Route, type StepEvent } from '../../engine';
 import type { Seat } from '../state/useSimulation';
 import { journey } from '../lib/format';
@@ -8,10 +8,12 @@ import s from '../styles/ui.module.css';
 
 /** Column geometry shared with LoadProfile so the two line up; the column width follows the container. */
 export const LABEL_W = 64;
+/** Room after the last column for the terminus code, so it never collides with the code before it. */
+export const END_PAD = 44;
 /** Grid x-coordinate of segment j (or the terminus, j = n). */
 export const segmentAt = (colW: number) => (j: number) => LABEL_W + j * colW;
 /** Column width that fills `available` pixels, within limits that keep codes and bars legible. */
-export const columnWidth = (available: number, n: number) => Math.max(40, Math.min(120, Math.floor((available - LABEL_W - 1) / n)));
+export const columnWidth = (available: number, n: number) => Math.max(40, Math.min(120, Math.floor((available - LABEL_W - END_PAD) / n)));
 
 const HEADER_H = 22;
 const GHOST_H = 26;
@@ -39,6 +41,36 @@ export function HatchPattern({ id }: { id: string }) {
   );
 }
 
+/**
+ * A chart in two parts: a label column that stays put, and the plot, which scrolls sideways under it on long
+ * routes. The plot keeps the usual coordinates (x starts at LABEL_W) through its viewBox.
+ */
+export function ChartFrame({ n, colW, height, ariaLabel, labels, children }:
+  { n: number; colW: number; height: number; ariaLabel: string; labels: ReactNode; children: ReactNode }) {
+  const plotWidth = n * colW + END_PAD;
+  const font = { fontFamily: 'var(--font)', fontSize: 11, fontVariantNumeric: 'tabular-nums' };
+  return (
+    <div className={s.chartRow}>
+      <svg className={s.stickyLabels} width={LABEL_W} height={height} aria-hidden style={font}>{labels}</svg>
+      <svg width={plotWidth} height={height} viewBox={`${LABEL_W} 0 ${plotWidth} ${height}`} role="img" aria-label={ariaLabel} style={font}>
+        {children}
+      </svg>
+    </div>
+  );
+}
+
+/** Station codes: each at the start of its column; the terminus just past the last column. */
+export function StationCodes({ route, colW, y }: { route: Route; colW: number; y: number }) {
+  const x = segmentAt(colW);
+  return (
+    <>
+      {route.stations.map((st, j) => (
+        <text key={st.code} x={x(j) + 3} y={y} style={{ fill: 'var(--coach-blue)', fontWeight: 800 }}>{st.code}</text>
+      ))}
+    </>
+  );
+}
+
 interface Props {
   route: Route;
   berths: number;
@@ -51,19 +83,21 @@ interface Props {
   emphasis?: Set<number> | null;       // proof panel: outline these bookings, fade the rest
   rejected?: Seat | null;              // witness: the rejected passenger, in amber
   animateEntry?: boolean;              // charting: bars grow in as they are placed
+  placeholder?: string | null;         // a line of help across an empty grid
 }
 
-// ponytail: SVG only; SPEC 13.4's canvas fallback above 5000 cells is not needed for demo-line (648 cells). Add with long real routes.
+// ponytail: SVG only; SPEC 13.4's canvas fallback above 5000 cells is not needed (largest shipped route: 4248 cells).
 export function CoachGrid({
   route, berths, racBerths, colW, seated, current = null, ghostRow = true, highlightSegment = null, emphasis = null, rejected = null, animateEntry = false,
+  placeholder = null,
 }: Props) {
   const hatchId = useId();
   const n = route.stations.length - 1;
   const x = segmentAt(colW);
+  const right = x(n); // right edge of the grid
   const rowH = berths > 32 ? 14 : 22;
   const top = HEADER_H + (ghostRow ? GHOST_H : 0);
   const racTop = top + berths * rowH + RAC_GAP;
-  const width = x(n) + 1;
   const height = (racBerths > 0 ? racTop + racBerths * RAC_H : top + berths * rowH) + 1;
   const rowY = (i: number) => top + i * rowH;
   const racY = (i: number) => racTop + i * RAC_H;
@@ -82,32 +116,34 @@ export function CoachGrid({
   const isCurrent = (seat: Seat) =>
     current?.booking.id === seat.booking.id && current.outcome.kind === 'placed' && current.outcome.pool === seat.pool;
 
-  const rows = (count: number, y: (i: number) => number, label: (i: number) => string, rac: boolean, h: number) =>
+  const rowLines = (count: number, y: (i: number) => number, rac: boolean) =>
     Array.from({ length: count }, (_, i) => (
       <g key={`${rac}-${i}`}>
-        <text x={0} y={y(i) + (rac ? RAC_H - 7 : labelDy)} style={rac ? { ...labelStyle, fontSize: 11 } : labelStyle}>{label(i)}</text>
-        <line x1={LABEL_W} x2={width} y1={y(i)} y2={y(i)} style={{ stroke: 'var(--coach-blue)', strokeOpacity: !rac && i % BAY === 0 ? 0.45 : 0.12 }} />
-        {rac && <line x1={LABEL_W} x2={width} y1={y(i) + h / 2} y2={y(i) + h / 2} style={{ stroke: 'var(--coach-blue)', strokeOpacity: 0.5, strokeDasharray: '3 3' }} />}
+        <line x1={LABEL_W} x2={right} y1={y(i)} y2={y(i)} style={{ stroke: 'var(--coach-blue)', strokeOpacity: !rac && i % BAY === 0 ? 0.45 : 0.12 }} />
+        {rac && <line x1={LABEL_W} x2={right} y1={y(i) + RAC_H / 2} y2={y(i) + RAC_H / 2} style={{ stroke: 'var(--coach-blue)', strokeOpacity: 0.5, strokeDasharray: '3 3' }} />}
       </g>
     ));
   const columns = (y0: number, y1: number) => Array.from({ length: n + 1 }, (_, j) => (
     <line key={`${y0}-${j}`} x1={x(j)} x2={x(j)} y1={y0} y2={y1} style={{ stroke: 'var(--coach-blue)', strokeOpacity: 0.2 }} />
   ));
 
-  return (
-    <svg width={width} height={height} role="img"
-      aria-label={`Reservation chart: ${berths} berths${racBerths > 0 ? ` and ${racBerths} RAC berths` : ''} across ${n} segments, ${seated.length} journeys seated`}
-      style={{ fontFamily: 'var(--font)', fontSize: 11 }}>
-      <defs><HatchPattern id={hatchId} /></defs>
-
-      {/* Boarding station codes; the terminus closes the last column. */}
-      {route.stations.map((st, j) => (
-        <text key={st.code} x={x(j) + (j === n ? -3 : 3)} y={14} textAnchor={j === n ? 'end' : 'start'}
-          style={{ fill: 'var(--coach-blue)', fontWeight: 800 }}>{st.code}</text>
-      ))}
-
-      {/* Ghost bar: the request just decided, labelled with its outcome. */}
+  const labels = (
+    <>
       {ghostRow && <text x={0} y={HEADER_H + 16} style={{ fill: 'var(--ink)', fontWeight: 600 }}>{ghost ? ghost.label : 'Next'}</text>}
+      {Array.from({ length: berths }, (_, i) => <text key={i} x={0} y={rowY(i) + labelDy} style={labelStyle}>{berthLabel(i)}</text>)}
+      {Array.from({ length: racBerths }, (_, i) => (
+        <text key={`rac-${i}`} x={0} y={racY(i) + RAC_H - 7} style={{ ...labelStyle, fontSize: 11 }}>RAC {i + 1}</text>
+      ))}
+    </>
+  );
+
+  return (
+    <ChartFrame n={n} colW={colW} height={height} labels={labels}
+      ariaLabel={`Reservation chart: ${berths} berths${racBerths > 0 ? ` and ${racBerths} RAC berths` : ''} across ${n} segments, ${seated.length} journeys seated`}>
+      <defs><HatchPattern id={hatchId} /></defs>
+      <StationCodes route={route} colW={colW} y={14} />
+
+      {/* Ghost bar: the request just decided; its outcome is named in the label column. */}
       {ghostRow && current && ghost && (
         <rect x={x(current.booking.from) + 1} y={HEADER_H + 4} width={(current.booking.to - current.booking.from) * colW - 2} height={GHOST_H - 10} rx={3}
           style={{ fill: fill(ghost.fill), stroke: 'var(--ink)', strokeWidth: 1, strokeDasharray: '4 2' }}>
@@ -121,13 +157,13 @@ export function CoachGrid({
       )}
 
       {/* Grid: berth rows, bay separators every 8, segment columns; then the RAC berths. */}
-      {rows(berths, rowY, berthLabel, false, rowH)}
-      <line x1={LABEL_W} x2={width} y1={rowY(berths)} y2={rowY(berths)} style={{ stroke: 'var(--coach-blue)', strokeOpacity: 0.45 }} />
+      {rowLines(berths, rowY, false)}
+      <line x1={LABEL_W} x2={right} y1={rowY(berths)} y2={rowY(berths)} style={{ stroke: 'var(--coach-blue)', strokeOpacity: 0.45 }} />
       {columns(top, rowY(berths))}
       {racBerths > 0 && (
         <>
-          {rows(racBerths, racY, (i) => `RAC ${i + 1}`, true, RAC_H)}
-          <line x1={LABEL_W} x2={width} y1={racY(racBerths)} y2={racY(racBerths)} style={{ stroke: 'var(--coach-blue)', strokeOpacity: 0.45 }} />
+          {rowLines(racBerths, racY, true)}
+          <line x1={LABEL_W} x2={right} y1={racY(racBerths)} y2={racY(racBerths)} style={{ stroke: 'var(--coach-blue)', strokeOpacity: 0.45 }} />
           {columns(racTop, racY(racBerths))}
         </>
       )}
@@ -148,6 +184,14 @@ export function CoachGrid({
           <title>{`${tooltip(route, rejected.booking)}\nWaitlisted by the strategy; seated here`}</title>
         </rect>
       )}
-    </svg>
+
+      {/* Help line across an empty grid, near the left so it is in view on wide charts too. */}
+      {placeholder && (
+        <text x={LABEL_W + Math.min((right - LABEL_W) / 2, 320)} y={top + Math.min(berths * rowH, 320) / 2} textAnchor="middle"
+          style={{ fill: 'var(--ink)', fillOpacity: 0.7, fontSize: 15, fontWeight: 600, stroke: 'var(--chart-bg, var(--paper))', strokeWidth: 6, paintOrder: 'stroke' }}>
+          {placeholder}
+        </text>
+      )}
+    </ChartFrame>
   );
 }

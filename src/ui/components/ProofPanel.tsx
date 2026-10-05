@@ -35,8 +35,8 @@ function ProofBody({ route, coach, event, requests, colW }: Props) {
       <div className={s.section}>
         <h2>Why they were waitlisted</h2>
         {title}
-        <p>
-          <span className={s.chip} style={{ background: 'var(--signal-red)' }}>Full here</span>{' '}
+        <p className={`${s.callout} ${s.calloutRed}`}>
+          <span className={`${s.chip} ${s.chipRed}`}>Full here</span>{' '}
           Segment {segmentName(route, c.segment)} already carried {c.occupants.length} passengers on {berths} berths.
           {racFull !== null && <> The {slots} RAC places were full too, on segment {segmentName(route, racFull)}.</>}
           {' '}No seating could fit one more.
@@ -59,8 +59,8 @@ function ProofBody({ route, coach, event, requests, colW }: Props) {
     <div className={s.section}>
       <h2>Why they were waitlisted</h2>
       {title}
-      <p>
-        <span className={s.chip} style={{ background: 'var(--signal-amber)' }}>Assignment</span>{' '}
+      <p className={`${s.callout} ${s.calloutAmber}`}>
+        <span className={`${s.chip} ${s.chipAmber}`}>Assignment</span>{' '}
         {rac && 'Confirmed berths were full on part of this journey, but RAC was not. '}
         Every segment of this journey still had a free {place}. The busiest carried {c.maxLoadOnRange} of {capacity}.
         Earlier choices left no single {place} free end to end.
