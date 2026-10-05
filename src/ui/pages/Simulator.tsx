@@ -6,7 +6,7 @@ import { MetricsStrip } from '../components/MetricsStrip';
 import { RequestTicker } from '../components/RequestTicker';
 import { CoachGrid, columnWidth } from '../components/CoachGrid';
 import { LoadProfile } from '../components/LoadProfile';
-import { ChartingView } from '../components/ChartingView';
+import { ChartingView, PrepareChart } from '../components/ChartingView';
 import { RejectionList } from '../components/RejectionList';
 import { ProofPanel } from '../components/ProofPanel';
 import { TierComparison } from '../components/TierComparison';
@@ -21,7 +21,7 @@ const SCENARIO_WORDS = { mixed: 'Mixed trips', short: 'Mostly short trips', long
 function placeholderFor(v: SimView): string | null {
   if (v.step === 0) return 'Press Play to watch booking requests arrive';
   if (v.strategy === 'deferred' && !v.charting && v.pending.length > 0) {
-    return `${plural(v.pending.length, 'booking')} accepted. Berths are assigned at charting, below.`;
+    return `${plural(v.pending.length, 'booking')} accepted. Berths are assigned at charting.`;
   }
   return null;
 }
@@ -39,6 +39,9 @@ export function Simulator() {
   const coach = { berths: config.berths, racBerths: config.racBerths };
   const forced = selected?.outcome.kind === 'rejected' && selected.outcome.certificate.kind === 'forced' ? selected.outcome.certificate : null;
 
+  const deferredView = boards.find((v) => v.strategy === 'deferred');
+  const accepted = deferredView ? chartOrder(runs.deferred, deferredView.step).map((x) => x.booking) : [];
+
   const board = (v: SimView, isPrimary: boolean) => (
     <div className={s.board} key={v.strategy}>
       {compareView && (
@@ -46,17 +49,20 @@ export function Simulator() {
           {STRATEGY_NAME[v.strategy]}: {v.counts.seated} seated, {v.counts.waitlisted} waitlisted ({v.counts.strategyInduced} assignment)
         </h3>
       )}
+      {/* Above the chart, so it needs no scrolling. The other board gets a hidden copy so grids line up row for row in compare mode. */}
+      {deferredView && (
+        <div style={v === deferredView ? undefined : { visibility: 'hidden' }} aria-hidden={v !== deferredView}>
+          <PrepareChart accepted={accepted.length} pending={deferredView.pending.length} bookingClosed={v.step === v.total}
+            charting={deferredView.charting} onPrepare={sim.prepareChart} />
+        </div>
+      )}
       <CoachGrid route={route} berths={config.berths} racBerths={config.racBerths} colW={colW} seated={v.seated} current={v.current}
         animateEntry={v.charting} placeholder={placeholderFor(v)}
         highlightSegment={isPrimary && forced ? forced.segment : null}
         emphasis={isPrimary && forced ? new Set(forced.occupants) : null} />
       <LoadProfile route={route} load={v.load} capacity={config.berths} colW={colW} />
       {config.racBerths > 0 && <LoadProfile route={route} load={v.racLoad} capacity={2 * config.racBerths} colW={colW} label="RAC" />}
-      {/* Below the chart, so grids line up row for row in compare mode. */}
-      {v.strategy === 'deferred' && (
-        <ChartingView route={route} colW={colW} accepted={chartOrder(runs.deferred, v.step).map((x) => x.booking)} pending={v.pending}
-          bookingClosed={v.step === v.total} charting={v.charting} onPrepare={sim.prepareChart} />
-      )}
+      {v === deferredView && <ChartingView route={route} colW={colW} accepted={accepted} pending={v.pending} />}
     </div>
   );
 

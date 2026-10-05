@@ -119,3 +119,6 @@ Feedback: headings looked cramped; the three "how it works" cards looked lonely;
   - Method, RAC and verification: a strip of **facts led by a number**.
   - Method, limits: **sticky notes**, one caveat each.
 - Copy across Overview and Method was shortened; no finding or caveat was dropped, only its wording.
+
+## 2026-10-05 — "Prepare chart" moved above the grid (user request)
+The button sat under the 72-berth grid, so a Deferred run needed a long scroll to chart. It is now `PrepareChart`, rendered above the grid; the pending pool (`ChartingView`) stays below. In compare mode the other board gets a hidden copy of the row so the two grids still line up row for row.

@@ -41,7 +41,7 @@ export function RequestTicker({ route, view, coach }: { route: Route; view: SimV
       {!view.charting && view.pending.length > 0 && (
         <><br /><span className={s.muted}>
           {view.step === view.total
-            ? `Booking has closed. ${plural(view.pending.length, 'booking')} wait for the chart: press Prepare chart under the grid.`
+            ? `Booking has closed. ${plural(view.pending.length, 'booking')} wait for the chart: press Prepare chart above the grid.`
             : `${plural(view.pending.length, 'booking')} waiting for charting.`}
         </span></>
       )}
