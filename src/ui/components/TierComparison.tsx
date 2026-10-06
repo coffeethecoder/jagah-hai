@@ -14,8 +14,8 @@ export function TierComparison({ runs, current, total, racBerths }: Props) {
 
   return (
     <div className={s.section}>
-      <h2>All strategies on this stream</h2>
-      <p className={s.hint}>Whole stream, all {total} requests, whatever the playback position.</p>
+      <h2>Policy Benchmark (Full Stream)</h2>
+      <p className={s.hint}>Stream totals across all {total} reservation requests:</p>
       <div className={s.tableWrap}><table className={s.table}>
         <thead>
           <tr>

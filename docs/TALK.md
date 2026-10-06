@@ -1,30 +1,33 @@
 # Talk and demo script
 
-Goes with the 10-slide deck: https://claude.ai/artifact/X893R79S2jxKNJVcDj5eR9
-The same per-slide wording is in the deck's speaker notes.
+Three slides, then the simulator. This is the full version with everything in it: about 7 minutes.
+Deck: https://claude.ai/artifact/X893R79S2jxKNJVcDj5eR9
 
 ## Plan
 
-About 11 minutes in total. Change "I" to "we" if you present as a team.
+| Part | Time |
+|---|---|
+| Slide 1: title | 0:10 |
+| Slide 2: the problem, what exists, our solution | 1:25 |
+| Slide 3: where discrete maths comes in, and why TypeScript | 2:10 |
+| Demo on the simulator | 3:20 |
+| Closing line | 0:10 |
 
-| Part | Time | Weight |
-|---|---|---|
-| Slides 1 to 3: the problem and the model | 2:10 | Light. Set up the question. |
-| Slide 4: the theorem | 1:15 | **Heavy.** Everything else depends on it. |
-| Slides 5 and 6: tiers, what was built | 1:25 | Light. |
-| Live demo | 3:00 | **Heavy.** This is what people remember. |
-| Slide 7: how often | 0:40 | Medium. |
-| Slide 8: what it costs | 0:55 | **Heavy.** The headline result. |
-| Slides 9 and 10: RAC, lessons, conclusion | 1:30 | Light. |
+The words below are how you might say it, not lines to memorise. Say them your own way.
 
-The story in one line: the demo shows fragmentation is real and frequent, then slide 8 shows it is cheap.
+**To get it down to about 4 minutes,** make these cuts. Together they save about 2:45.
 
-**If you only have 8 minutes:** on slide 3 say only the first two paragraphs, skip slide 9, and skip demo step 5.
+1. Slide 2: say "what exists" in one sentence, and the solution in two (saves 0:40).
+2. Slide 3: one sentence for each concept instead of three or four (saves 0:50).
+3. Slide 3: TypeScript in one sentence, "the same code runs the demo and the experiments" (saves 0:20).
+4. Demo step 1: skip the tour of the left panel (saves 0:15).
+5. Demo step 5: skip the red rejection (saves 0:20).
+6. Demo step 6: skip Best-fit, Random-fit and the unlimited berths box (saves 0:20).
 
 ## Before you start
 
-1. In the project folder run `npm run dev` and open the address it prints, then go to **Simulator**.
-2. Set the left panel exactly like this:
+1. In the project folder run `npm run dev`, open the address it prints, and go to **Simulator**.
+2. Set the left panel like this:
    - Route: **Punjab Mail (12137)**
    - Coach: **Sleeper, 72**
    - RAC berths: **None**
@@ -33,216 +36,184 @@ The story in one line: the demo shows fragmentation is real and frequent, then s
    - Tatkal surge: off
    - Seed: **1**
    - Strategy: **First-fit**, and "Compare with another strategy" unticked
-3. The tags under the title must read: 72 berths, Mixed trips, Demand 1.4 times capacity, Seed 1, **361 requests**. If they do, every number in this script will match.
+3. The line under the title must end with Seed 1 and **361 requests**. If it does, every number below will match.
 4. Drag **Speed** to about 40/s, then press **Reset** so it says "Request 0 of 361".
 5. Do not reload the page after this: a reload puts the settings back to the defaults.
-6. Keep the deck in a second window on slide 6, so one key switches between them.
+6. Put the deck on slide 1 in its own window.
 
-## Slides 1 to 6
+## Slides
 
-### Slide 1: The train isn't full (0:35)
+### Slide 1: Title (0:10)
 
-> Good morning. Everyone here has been on a waiting list. And most of us have walked through that same train and seen empty berths.
->
-> My project asks one simple question: when you are waitlisted, is the train really full?
->
-> The picture on the right is a reservation chart. Each row is a berth. Each green bar is one passenger's journey. The dashed bar is a passenger who was turned away, even though there are gaps all over the chart.
->
-> I measured how often that happens, and what it costs.
+> Hi everyone, I'm Neel. My project is called "The Train Isn't Full", and it's about railway waiting lists.
 
-### Slide 2: Waitlisted while berths sit empty (0:50)
+### Slide 2: The problem and our solution (1:25)
 
-> Here is the smallest version of the problem. Two berths, Mumbai to Delhi, through Surat.
->
-> Berth 1 is free up to Surat. Berth 2 is free after Surat. Now a passenger wants to go from Mumbai to Delhi.
->
-> There is a free berth on each half of the journey. But no single berth is free all the way, so they are waitlisted.
->
-> If the two earlier passengers had been put on the same berth, this request would fit. So the train is not full. It is fragmented.
->
-> My research question has two parts. How much capacity is lost this way on real routes? And how much comes back if berth numbers are given only at charting time?
+The problem. Point at the small chart on the left.
 
-### Slide 3: A berth chart is a graph colouring (0:45)
+> So here's the problem. Take two berths on a train from Mumbai to Delhi. Berth 1 is free till Surat. Berth 2 is free from Surat onwards.
+>
+> Now someone wants to go the whole way. There's an empty berth on both halves of the trip, but they still get waitlisted, because no single berth is free from start to end.
+>
+> So the train isn't really full. The berths were just given out in a bad order.
 
-Keep this one quick.
+What exists. Point at the strip at the bottom.
 
-> To study this I need a model, and it is one idea. A booking is an interval: from the station where you board, up to but not including the station where you get off.
+> I looked at what already exists. Apps like ConfirmTkt predict whether a waitlisted ticket will get confirmed, and suggest other trains. The Railways have their own AI system, called Ideal Train Profile, which adjusts how seats are split between stations. And in research there's a paper called "The Seat Reservation Problem", which studies the worst case in theory.
 >
-> So if I get off at Surat and you board at Surat, we do not overlap, and we can share a berth.
->
-> From this one definition, the course topics appear. Overlap is a relation. "Gets off before the other boards" is a partial order, and the passengers of one berth form a chain. Giving berths is a function, and pigeonhole gives the impossibility proofs.
->
-> And as a graph: bookings are vertices, overlaps are edges, and giving out berths is colouring an interval graph.
+> But none of these tells a passenger why they were waitlisted, or whether the train was actually full.
 
-### Slide 4: One theorem sorts every rejection (1:15)
+Our solution. Point at the list on the right.
 
-The most important slide. Slow down.
+> That's the gap I worked on. I built a web app that replays the bookings of a real train, one by one.
+>
+> For every waitlisted passenger it gives a proof: either the train really was full, or it was only the way berths were given out. You can compare five ways of giving out berths on exactly the same passengers. It handles RAC as well. And every run is repeatable, because the same seed always gives the same passengers.
 
-> This is the centre of the project. Theorem 1: a set of bookings fits on k berths if and only if no segment of the route carries more than k passengers.
->
-> One direction is pigeonhole. If k plus one people are on the same stretch, they cannot share k berths.
->
-> The other direction is constructive. Seat the passengers in boarding order, each on the lowest free berth. It never fails.
->
-> Why does this matter? Because it lets me label every single rejection.
->
-> If some stretch of your journey already carries k people, the rejection is forced. I call it "full here". No system could have seated you.
->
-> But if every stretch still has room, the theorem says a seating exists. So you were turned away only because of earlier berth choices. I call that "assignment".
->
-> On the right is the smallest example: three passengers on two berths, and A to C cannot be seated, although every stretch has a free berth.
->
-> Red and amber. Please remember these two colours for the demo.
+### Slide 3: Where discrete maths comes in (2:10)
 
-### Slide 5: Three tiers, two kinds of loss (0:55)
+> Now, where is discrete maths in this? Pretty much everywhere.
+>
+> First, relations. A booking is an interval on the route, from where you board up to where you get off. Two bookings are related if they overlap. That relation is reflexive and symmetric, but not transitive. The app uses it every single time it checks whether a berth is free.
+>
+> Second, partial orders. If one passenger gets off before another one boards, the first comes before the second. That's a partial order. The passengers on one berth form a chain. Passengers who all overlap form an antichain, and they all need different berths. By Dilworth's theorem, the fewest berths you need is the size of the biggest antichain, which is just the busiest stretch of the route.
+>
+> Third, functions and pigeonhole. A seating is a function from bookings to berths. If a stretch already has 72 people on 72 berths, pigeonhole says one more can't fit. That's exactly how the app proves that a train was full.
+>
+> Fourth, graphs. Make every booking a vertex and join two if they overlap. That's an interval graph, and giving out berths is colouring it. First-fit is simply greedy colouring.
+>
+> The line at the bottom ties it together. The bookings fit in k berths exactly when no stretch of the route has more than k people on it.
 
-> To put a number on the cost, I compare three levels of knowledge.
->
-> Tier 1 is booking as we know it: you get a berth number immediately. First-fit takes the lowest free berth. Best-fit takes the tightest gap. Random-fit takes any free berth, as a baseline.
->
-> Tier 2, deferred, only promises you a place. It accepts you if every stretch has room, and gives out all the berth numbers together at charting. By the theorem, it can never cause an amber rejection.
->
-> Tier 3 is the offline optimum. It sees every request in advance and keeps the largest set that fits. Nobody can run this in real life. It is the ceiling.
->
-> The gaps between the tiers are the two losses. Tier 2 minus Tier 1 is what fragmentation costs. Tier 3 minus Tier 2 is what first come, first served costs.
+Why TypeScript. No slide for this; say it before you switch.
 
-### Slide 6: One engine behind everything (0:30)
-
-> I built three things on one engine. The engine is plain TypeScript, every algorithm written from scratch, and the same seed always gives the same result. A web app that plays a reservation chart one booking at a time. And an experiment runner.
+> One word on the language. Everything is written in TypeScript, and I wrote all the algorithms myself, with no graph libraries.
 >
-> It is checked by 136 tests, including a brute-force check of the optimum. Let me show you the app.
+> I picked TypeScript for three reasons. The same code runs in the browser and on my laptop, so the engine in this demo is the exact one I ran my experiments with, not a second copy. The strict type checking catches silly mistakes, like mixing up a booking number with a berth number. And it needs no server, so the app works offline.
+>
+> Okay, let me show you.
 
 Switch to the browser.
 
-## The demo (3:00)
+## The demo
 
-### 1. Orient (0:20)
+### 1. What you're looking at (0:30)
 
-Do: nothing yet. Point at the title, then at the empty chart.
+Do: nothing yet. Point at the left panel, then the chart, then the right side.
 
-> This is one sleeper coach of Punjab Mail, Mumbai CSMT to Firozpur, 54 stops. 72 berths down the side, the route across the top.
+> This is the simulator. On the left is the setup. You pick a train, and there are three real ones here with their actual stops. You pick the coach, how many RAC berths, how busy the day is, and the rule for giving out berths.
 >
-> I have generated 361 booking requests. That is about 1.4 times what the coach can hold, so a busy day.
-
-### 2. Watch it fill (0:35)
-
-Do: click **Play**. Click the button, not the space bar. It takes about 10 seconds.
-
-> Each bar is one passenger's journey. First-fit puts each one on the lowest-numbered free berth. Watch the counters at the top.
-
-When it stops, point at the four counters one by one.
-
-> 271 seated. 90 turned away.
+> In the middle is the reservation chart. This is one sleeper coach of the Punjab Mail, Mumbai to Firozpur. The 72 berths go down the side and the stations go across the top.
 >
-> Now look at these two. Full here: zero. Assignment: ninety.
+> I've generated 361 booking requests for it. That's more than it can hold, so think of it as a busy day.
+
+### 2. Fill the coach (0:30)
+
+Do: click **Play**. Click the button, not the space bar. It takes about 9 seconds.
+
+> I'll press play. Every green bar is one passenger. The rule here is First-fit, the greedy colouring from the slide: each passenger gets the lowest-numbered berth that's free.
+
+When it stops, point at the counters along the top.
+
+> Okay, done. 271 people got a berth and 90 got waitlisted.
 >
-> Not one of those 90 people was refused because the train was full.
+> But look at these two. "Full here" is zero, and "Assignment" is 90. So not one of those 90 was turned away because the train was full.
 
-### 3. The proof for one passenger (0:55)
+### 3. One passenger, and the proof (0:40)
 
-Do: in the right panel, click the chip **207 Assignment** (the eighth chip).
+Do: in the **Waitlisted passengers** box on the right, click **207**.
 
-> Take passenger 207: Mumbai CSMT to Lalitpur, 21 stretches of the route.
+> Let me pick one of them. This is passenger 207, going from Mumbai to Lalitpur.
 >
-> The app gives a proof. Every stretch of this journey still had a free berth. The busiest one carried 69 of 72.
+> The app says every stretch of that trip still had a free berth. Even on the busiest stretch only 69 out of 72 were taken. It just was never the same berth all the way.
+
+Do: scroll down past the small table and click **Show a seating that fits everyone**.
+
+> And if I click this, it shows a seating where everybody fits, this passenger too. That amber bar is them.
 >
-> So three berths were free at the worst point, and still no seat, because no single berth was free end to end.
+> So that result from the slide isn't just theory. The app uses it for every single rejection.
 
-Do: scroll down past the table and click **Show a seating that fits everyone**. A second, tidy chart appears on the right, with an amber bar on berth 4.
+### 4. Decide berths later (0:30)
 
-> And here is the theorem at work. These are the same passengers booked so far, plus this one: all 201 on 72 berths. The amber bar is our passenger.
+Do: scroll back to the top. Under Strategy, click **Deferred**. Click **Jump to end**. Then click **Prepare chart**, just above the grid.
+
+> Now, what if we don't give berth numbers at booking time, and only decide them at charting? That's this option, Deferred. Same 361 requests.
 >
-> Same people in both charts. The left one has gaps. The right one is packed.
-
-### 4. Deferred (0:40)
-
-Do: scroll back to the top. In the left panel under Strategy, click **Deferred**. Then click **Jump to end**.
-
-> Now Tier 2, on the same 361 requests. Deferred gives no berth numbers while booking is open.
+> Assignment is zero now. And when I prepare the chart, it seats everybody in boarding order, and they all fit.
 >
-> Look at the counters. Assignment is zero. Every rejection is red: for those people the train really was full.
+> But look at seated: 272. That's only one more than before.
+
+### 5. A train that really was full (0:20)
+
+Do: in the Waitlisted passengers box, click the first red number, **196**.
+
+> These red ones are different. Passenger 196, Bhopal to Delhi. One stretch of that trip already had 72 passengers on 72 berths, and the app lists all 72.
 >
-> And seated: 272. One more than before.
+> That's pigeonhole. Nobody could have seated this person.
+
+### 6. Compare everything (0:40)
+
+Do: look at the table **All strategies on this stream** on the right. Scroll a little if it is cut off.
+
+> This table has all five rules on the same requests. Best-fit picks the berth that leaves the smallest gap, and Random-fit just picks any free one.
 >
-> We removed ninety unfair rejections and gained one seat.
-
-Do: click **Prepare chart**, just above the grid. The berths fill in two seconds.
-
-> And this is charting: everyone gets a berth in boarding order, with no gaps.
-
-### 5. All five strategies (0:30)
-
-Do: in the right panel, scroll a little to the table **All strategies on this stream**.
-
-> Here are all five on this same stream. First-fit 271. Deferred 272. And the optimum, which knows the future: 301. Twenty-nine more.
+> First-fit got 271, Deferred got 272. And the best you could possibly do, if you knew every request in advance, is 301.
 >
-> So on this one train, fragmentation cost one seat and arrival order cost twenty-nine.
->
-> But this is one stream of passengers. Is it typical?
+> So on this train, fixing the berth allocation got us one seat. The bigger loss is simply that bookings are first come, first served.
 
-Switch back to the deck, slide 7.
+Do: point at **With unlimited berths**, just under the table.
+
+> And this last box is Dilworth's theorem at work. To seat all 361 people you'd need at least 132 berths, because that's the busiest stretch. First-fit would use 138.
+
+### 7. Closing line (0:10)
+
+Do: stay on the simulator. It is the best thing to have on screen for questions.
+
+> So that's my project. When you're waitlisted, the train often isn't full, and this can show it passenger by passenger.
+>
+> Thank you. I'm happy to take questions, or to run any train you like.
 
 ### If the demo breaks
 
-Say "the app is in the repository, let me show you the numbers instead" and go to slide 7. Slides 7 and 8 carry the result without the demo.
+Reload the page, set Route and Demand again from the checklist, press **Jump to end**, and carry on from step 3. The numbers will be the same.
 
-## Slides 7 to 10
+## For questions
 
-### Slide 7: Long routes fragment often (0:40)
+### The five strategies, one line each
 
-> That was one stream of passengers. Here are a hundred streams on each of four routes.
->
-> On Punjab Mail and Vivek Express, First-fit turns away about one request in seven although every stretch had room: 14.7 and 13.1 percent.
->
-> On the short routes it almost never happens. With 12 stops, journeys have too few ways to interleave.
->
-> So fragmentation is a problem of long routes with many stops. The strategy matters too: Best-fit roughly halves the rate, and Random-fit doubles it.
+- **First-fit:** give the lowest-numbered berth that is free for the whole journey.
+- **Best-fit:** give the free berth where the journey leaves the smallest gap, so big empty stretches are kept for long trips.
+- **Random-fit:** give any free berth at random. It is only a baseline to compare against.
+- **Deferred:** accept the passenger if every stretch of their journey has room, but decide all the berth numbers together at charting, in boarding order.
+- **Optimum (best possible):** look at every request in advance and keep the largest set of passengers that fits. Nobody can run it in real life, so it is only a ceiling.
 
-### Slide 8: But it costs almost no seats (0:55)
+The first three fix the berth at booking time, which is why they can turn someone away even when every stretch has room. Deferred never does that.
 
-The headline. Pause before the last line.
+### Where each concept shows up in the app
 
-> Now the result that surprised me. Those frequent rejections cost almost no seats.
->
-> The amber sliver is what fragmentation costs: about one seat per coach on Punjab Mail, and less elsewhere.
->
-> The violet bar is what first come, first served costs: 28 seats on Punjab Mail, 32 on Vivek Express.
->
-> Why so little? When First-fit wrongly turns someone away, the space they would have used is usually taken by a later passenger. The coach ends up almost as full, just with different people in it.
->
-> On the two short routes the number is slightly negative. That is noise around zero.
->
-> So the honest answer to my question: fragmentation is frequent, but cheap.
+- **Relations:** the overlap check that decides whether a berth is free for a journey.
+- **Partial orders and Dilworth's theorem:** the "With unlimited berths" box, where the minimum number of berths equals the busiest stretch.
+- **Pigeonhole:** every red "Full here" proof.
+- **Functions:** a seating is a function from bookings to berths, and two overlapping bookings never get the same berth.
+- **Graph colouring:** the strategies. First-fit is greedy colouring, and Deferred colours in boarding order, which always works on an interval graph.
+- **Proofs:** the amber "Assignment" proof is a constructive proof. It shows an actual seating that fits everyone.
 
-### Slide 9: RAC, and two lessons from testing (0:45)
+### What already exists
 
-> Three shorter findings.
->
-> One: RAC. Two passengers sharing a side-lower berth is two extra places, so it is the same colouring problem. Nine RAC berths seat about 31 more passengers per coach.
->
-> Two: a lesson in rigour. My first rule for splitting passengers between confirmed and RAC looked obviously right. Random testing broke it in 1.2 percent of cases, with a counterexample of only five bookings. I replaced it with a rule I could prove.
->
-> Three: counting heads can mislead. Random-fit has the higher performance ratio, yet it fills less of the train, because it turns away long journeys and seats several short ones instead. So a report should always show utilization next to the seated count.
+- **ConfirmTkt and similar apps:** predict the chance that a waitlisted ticket gets confirmed, and suggest other trains or split journeys. They predict; they don't explain.
+- **Ideal Train Profile:** an AI system built by CRIS, the Railways' own software arm. It learns from past bookings and adjusts how berths are split between station pairs. It was tried on over 200 trains. It is internal, so passengers can't see how it decides.
+- **"The Seat Reservation Problem":** a 1999 paper by Joan Boyar and Kim Larsen. It studies First-fit and Best-fit for train seats in the worst case, in theory.
+- **What is different here:** a proof for each rejected passenger, on real Indian routes, that anyone can open and check.
 
-### Slide 10: Conclusion (0:45)
+### Why TypeScript
 
-> To conclude. Passengers are right: on long routes, the train often isn't full when you are waitlisted. About one request in seven is turned away for that reason.
->
-> But fixing it would seat only about one more passenger per coach. What really costs seats is serving people in arrival order, without knowing who comes next.
->
-> The limits. Passengers are simulated, because booking data is not public. I model one coach at a time. And this compares policies. It is not IRCTC's own system, whose algorithm is not published.
->
-> Next, I would weight the optimum by distance travelled, and add cancellations.
->
-> Everything you saw, the app, the proofs, the tests and the figures, comes from one repository.
->
-> Thank you. I am happy to take questions.
+- **One language everywhere:** the engine, the web app and the experiment runner share the same code, so the demo and the experiments cannot disagree.
+- **Strict types:** the compiler catches mistakes such as mixing a booking number with a berth number, or forgetting to handle a rejected passenger.
+- **No server:** it runs entirely in the browser, so it works offline and anyone can open it.
+- **Why not Python:** the algorithms would have had to be written again in JavaScript for the web page, and two copies can drift apart. Python is used only to draw the figures for the paper.
 
-## Questions you may get
+### Questions you may get
 
-- **Is this how IRCTC allocates berths?** No. Their algorithm is not published. I compare textbook policies on real routes.
-- **Why simulated passengers?** Booking data is not public. I use four trip-length patterns, demand from 0.6 to 1.6 times capacity, and 100 random streams for each. The Findings page shows every combination.
-- **In the demo, Best-fit seated fewer than First-fit. Why?** On one stream anything can happen: an early rejection can leave room for two shorter trips later. For the same reason Deferred can lose to First-fit on a single stream. That is why I report averages over 100 streams and never claim it per train.
-- **Why not just use the optimum?** It needs every future request in advance. It is a ceiling to measure against. It also counts heads, so it prefers short journeys, which a railway may not want.
-- **What is new here?** The theorem is classical. What I add is a proof shown for every single rejection, and a measurement of the two losses on real routes.
-- **Why "empirical performance ratio" and not "competitive ratio"?** A competitive ratio is a worst-case guarantee. Mine is measured on simulated streams, so I do not use that name.
+- **Is this how IRCTC allocates berths?** No, their method isn't published. I compare a few standard ways of doing it on real routes.
+- **Are these real passengers?** The routes are real, the passengers are simulated, because booking data isn't public. The seed fixes them, so the same seed always gives the same day.
+- **Is one seat the usual gain?** That was one day on one train. The full results over many runs are in the research part of the project, on the Findings page.
+- **Why not just use the best possible method?** It needs every future request in advance, so nobody can run it. It's only there as a ceiling to compare against.
+- **What exactly is new?** The theorem is a known one. What I built is an app that proves, for each rejected passenger, whether the train was really full.

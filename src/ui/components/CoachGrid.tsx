@@ -48,7 +48,7 @@ export function HatchPattern({ id }: { id: string }) {
 export function ChartFrame({ n, colW, height, ariaLabel, labels, children }:
   { n: number; colW: number; height: number; ariaLabel: string; labels: ReactNode; children: ReactNode }) {
   const plotWidth = n * colW + END_PAD;
-  const font = { fontFamily: 'var(--font)', fontSize: 11, fontVariantNumeric: 'tabular-nums' };
+  const font = { fontFamily: 'var(--font-mono, monospace)', fontSize: 11, fontVariantNumeric: 'tabular-nums' };
   return (
     <div className={s.chartRow}>
       <svg className={s.stickyLabels} width={LABEL_W} height={height} aria-hidden style={font}>{labels}</svg>

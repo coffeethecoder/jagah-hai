@@ -28,7 +28,7 @@ export function ControlPanel({ config, routes, onChange }: Props) {
   return (
     <section className={s.card} aria-label="Setup">
       <div className={s.group}>
-        <h2 className={s.groupTitle}>Train</h2>
+        <h2 className={s.groupTitle}>01 // Train & Coach</h2>
         <label className={s.field}>
           Route
           <select value={config.routeId} onChange={(e) => onChange({ routeId: e.target.value })}>
@@ -51,7 +51,7 @@ export function ControlPanel({ config, routes, onChange }: Props) {
       </div>
 
       <div className={s.group}>
-        <h2 className={s.groupTitle}>Demand</h2>
+        <h2 className={s.groupTitle}>02 // Traffic Demand & Seed</h2>
         <label className={s.field}>
           Trip lengths
           <select value={config.scenario} onChange={(e) => onChange({ scenario: e.target.value as SimConfig['scenario'] })}>
@@ -102,7 +102,7 @@ export function ControlPanel({ config, routes, onChange }: Props) {
 
       <div className={s.group}>
         <fieldset className={s.options}>
-          <legend className={s.groupTitle} style={{ padding: 0, marginBottom: 12 }}>Strategy</legend>
+          <legend className={s.groupTitle} style={{ padding: 0, marginBottom: 8 }}>03 // Allocation Policy</legend>
           {STRATEGIES.map((o) => (
             <label key={o.value} className={s.option}>
               <input type="radio" name="strategy" value={o.value} checked={config.strategy === o.value} onChange={() => pickStrategy(o.value)} />

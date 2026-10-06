@@ -69,19 +69,30 @@ export function Simulator() {
   return (
     <div className={`${s.app} ${compareView ? s.wide : ''}`}>
       <header className={s.header}>
-        <p className={s.eyebrow}>Simulator</p>
-        <div className={s.headline}>
-          <h1>{route.name}</h1>
-          <p>{first.name} ({first.code}) to {last.name} ({last.code}), {route.stations.length} stops</p>
+        <div className={s.trainBoard}>
+          <div className={s.headline}>
+            {route.trainNumber ? (
+              <span className={s.trainBadge}>{route.trainNumber}</span>
+            ) : (
+              <span className={s.trainBadge}>EXP</span>
+            )}
+            <h1>{route.name}</h1>
+            <div className={s.routeTag}>
+              <span>{first.code}</span>
+              <span className={s.routeArrow}>➔</span>
+              <span>{last.code}</span>
+              <span className={s.routeStops}>({route.stations.length} stops)</span>
+            </div>
+          </div>
         </div>
-        <ul className={s.tags} aria-label="Current setup">
-          <li>{config.berths} berths{config.racBerths > 0 ? ` + ${config.racBerths} RAC` : ''}</li>
-          <li>{SCENARIO_WORDS[config.scenario]}</li>
-          <li>Demand {config.demandFactor.toFixed(1)} times capacity</li>
-          {config.tatkal && <li>Tatkal surge {Math.round(config.tatkalFraction * 100)}%</li>}
-          <li>Seed {config.seed}</li>
-          <li>{requests.length} requests</li>
-        </ul>
+        <div className={s.manifestStrip} aria-label="Train & simulation manifest">
+          <span className={s.manifestChip}><strong>COACH:</strong> Sleeper ({config.berths}B{config.racBerths > 0 ? ` + ${config.racBerths} RAC` : ''})</span>
+          <span className={s.manifestChip}><strong>TRAFFIC:</strong> {SCENARIO_WORDS[config.scenario]}</span>
+          <span className={s.manifestChip}><strong>LOAD:</strong> {config.demandFactor.toFixed(1)}× Capacity</span>
+          {config.tatkal && <span className={s.manifestChip}><strong>TATKAL:</strong> +{Math.round(config.tatkalFraction * 100)}%</span>}
+          <span className={s.manifestChip}><strong>SEED:</strong> #{config.seed}</span>
+          <span className={s.manifestChip}><strong>STREAM:</strong> {requests.length} Requests</span>
+        </div>
       </header>
 
       <aside className={s.sidebar}>
@@ -103,15 +114,15 @@ export function Simulator() {
 
         <section className={s.sheet} aria-labelledby="chart-heading">
           <div className={s.sheetHead}>
-            <h2 id="chart-heading">Reservation chart</h2>
-            <p>{config.berths} berths down, {n} segments across. Each bar is one passenger's journey.</p>
+            <h2 id="chart-heading">Coach Berth Reservation Chart</h2>
+            <p>{config.berths} Berths (Rows) × {n} Journey Segments (Cols)</p>
           </div>
           <ul className={s.legend}>
-            <li><span className={`${s.key} ${s.keySeated}`} aria-hidden />Seated</li>
-            <li><span className={`${s.key} ${s.keyCurrent}`} aria-hidden />Seated at this step</li>
-            {boards.some((v) => v.strategy === 'deferred') && <li><span className={`${s.key} ${s.keyPending}`} aria-hidden />Pending, no berth yet</li>}
-            {config.racBerths > 0 && <li><span className={`${s.key} ${s.keyRac}`} aria-hidden />RAC, half a shared berth</li>}
-            {forced && <li><span className={`${s.key} ${s.keyFull}`} aria-hidden />Full segment in the proof</li>}
+            <li><span className={`${s.key} ${s.keySeated}`} aria-hidden />Confirmed (CNF)</li>
+            <li><span className={`${s.key} ${s.keyCurrent}`} aria-hidden />Active Request</li>
+            {boards.some((v) => v.strategy === 'deferred') && <li><span className={`${s.key} ${s.keyPending}`} aria-hidden />Pending Charting</li>}
+            {config.racBerths > 0 && <li><span className={`${s.key} ${s.keyRac}`} aria-hidden />RAC (Shared)</li>}
+            {forced && <li><span className={`${s.key} ${s.keyFull}`} aria-hidden />Saturated Segment</li>}
           </ul>
           <div className={s.chartScroll} ref={chartRef}>
             <div className={s.boards}>{boards.map((v, i) => board(v, i === 0))}</div>

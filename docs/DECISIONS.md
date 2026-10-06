@@ -122,3 +122,20 @@ Feedback: headings looked cramped; the three "how it works" cards looked lonely;
 
 ## 2026-10-05 — "Prepare chart" moved above the grid (user request)
 The button sat under the 72-berth grid, so a Deferred run needed a long scroll to chart. It is now `PrepareChart`, rendered above the grid; the pending pool (`ChartingView`) stays below. In compare mode the other board gets a hidden copy of the row so the two grids still line up row for row.
+
+## 2026-10-06 — Simulator restyled as a plain working tool (user request: "less AI")
+The simulator read as a generic generated dashboard. Removed the tells, simulator only (`ui.module.css`); the other pages keep the 2026-10-05 design:
+- Header: no eyebrow label, no pill tags; a sans title and one plain line of setup facts.
+- Counters: one strip with dividers instead of five cards. Square colour keys, matching the chart.
+- Panels: 4px corners, tighter padding. Buttons, sliders and the progress bar are ink, not violet.
+- Strategy: a plain radio list instead of bordered option cards with badges.
+- Waitlist: a grid of booking numbers; colour says why (red full here, amber assignment), stated once above the grid instead of on every chip.
+
+## 2026-10-06 — Simulator redesign: Railway Manifest & Platform Console (user request: Option 1)
+Replaced generic dashboard tropes with authentic Indian Railways PRS (Passenger Reservation System) and platform chart aesthetics:
+- **Typography**: Added `JetBrains Mono` (`--font-mono`) for station codes, berth numbers, PNR tickets, counts, and chart coordinates.
+- **Train Destination Board & Manifest Ribbon**: Header styled as an authentic train board (`[12137] PUNJAB MAIL [CSMT] ➔ [FZR]`) with coach manifest metadata.
+- **Occupancy & Status Bar**: Replaced generic SaaS stats with IRCTC status indicators (`CNF`, `RAC`, `WL`, `REGRET`, `FRAG`, `PACKING EFF`).
+- **Tactile Reservation Dispatch Console**: Mechanical key feel for dispatch controls with keyboard badges (`␣`, `→`, `⏭`, `R`) and odometer tracker.
+- **PNR Ticket Ticker**: Reservation requests displayed as live ticket slips with PNR numbers, journey tags, and official outcome stamps.
+- **Waitlist Manifest (WL) & Allocation Certificate**: Transformed rejections and proofs into railway ledger and certification sheets.

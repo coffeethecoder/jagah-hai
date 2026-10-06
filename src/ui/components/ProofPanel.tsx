@@ -19,21 +19,21 @@ function ProofBody({ route, coach, event, requests, colW }: Props) {
   if (!event || event.outcome.kind !== 'rejected') {
     return (
       <div className={s.section}>
-        <h2>Why they were waitlisted</h2>
-        <p className={s.muted}>Choose a waitlisted passenger to see the proof.</p>
+        <h2>Allocation Certificate</h2>
+        <p className={s.muted}>Select a waitlisted passenger above to inspect their certificate.</p>
       </div>
     );
   }
   const b = event.booking;
   const c = event.outcome.certificate;
-  const title = <h3>Booking {b.id}: {journey(route, b)} ({plural(b.to - b.from, 'segment')})</h3>;
+  const title = <h3>PNR #B-{b.id}: {journey(route, b)} ({plural(b.to - b.from, 'segment')})</h3>;
 
   if (c.kind === 'forced') {
     // With RAC, forced means both pools were full on this journey (SPEC 6); the certificate names the confirmed one.
     const racFull = slots > 0 ? Array.from({ length: b.to - b.from }, (_, i) => b.from + i).find((j) => event.racLoad[j] === slots) ?? null : null;
     return (
       <div className={s.section}>
-        <h2>Why they were waitlisted</h2>
+        <h2>Allocation Certificate</h2>
         {title}
         <p className={`${s.callout} ${s.calloutRed}`}>
           <span className={`${s.chip} ${s.chipRed}`}>Full here</span>{' '}
@@ -57,7 +57,7 @@ function ProofBody({ route, coach, event, requests, colW }: Props) {
   const everyone = Object.entries(c.witness).map(([id, index]) => ({ booking: requests[Number(id)], pool: c.pool, index }));
   return (
     <div className={s.section}>
-      <h2>Why they were waitlisted</h2>
+      <h2>Allocation Certificate</h2>
       {title}
       <p className={`${s.callout} ${s.calloutAmber}`}>
         <span className={`${s.chip} ${s.chipAmber}`}>Assignment</span>{' '}

@@ -7,7 +7,7 @@ export function UnboundedPanel({ requests, n, berths }: { requests: Booking[]; n
   const { ff, omega } = useMemo(() => ({ ff: firstFitBerthsNeeded(requests, n), omega: peakLoad(requests, n) }), [requests, n]);
   return (
     <div className={s.section}>
-      <h2>With unlimited berths</h2>
+      <h2>Unbounded Coach Bound</h2>
       <p className={s.num}>
         Berths First-fit would need to seat everyone: <strong>{ff}</strong>. Minimum possible: <strong>{omega}</strong> (the busiest segment).
         This coach has {berths}.
