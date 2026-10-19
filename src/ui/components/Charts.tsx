@@ -10,7 +10,7 @@ const M = { l: 52, r: 18, t: 14, b: 40 };
 const AXIS = { fill: 'var(--ink-3)', fontSize: 12 } as const;
 
 /** Round axis limits and ticks covering [min, max]. */
-export function niceScale(min: number, max: number, count = 4): { lo: number; hi: number; ticks: number[] } {
+function niceScale(min: number, max: number, count = 4): { lo: number; hi: number; ticks: number[] } {
   if (max <= min) max = min + 1;
   const raw = (max - min) / count;
   const mag = 10 ** Math.floor(Math.log10(raw));

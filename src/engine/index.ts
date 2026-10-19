@@ -15,3 +15,4 @@ export * from './unbounded';
 export * from './demand';
 export * from './simulate';
 export * from './metrics';
+export * from './recover';

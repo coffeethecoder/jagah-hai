@@ -118,7 +118,7 @@ export function Method() {
                 <p><b>Forced.</b> A segment already carries k.</p>
               </div>
               <div className={`${c.verdict} ${c.verdictAmber}`}>
-                <span className={`${c.pill} ${c.pillAmber}`}>Assignment</span>
+                <span className={`${c.pill} ${c.pillAmber}`}>Fragmented</span>
                 <p><b>Strategy-induced.</b> Room everywhere, but no berth free end to end.</p>
               </div>
             </div>

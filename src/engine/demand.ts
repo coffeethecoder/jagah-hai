@@ -7,7 +7,7 @@ type Profile = 'short' | 'long' | 'uniform';
 const SCENARIOS: DemandConfig['scenario'][] = ['short', 'long', 'mixed', 'uniform'];
 
 /** Sub-stream of the run seed used for demand; random-fit uses the run seed itself. */
-export const DEMAND_STREAM = 1;
+const DEMAND_STREAM = 1;
 
 /** Weights for trip length ℓ = 1 … lMax (index ℓ - 1) under a length profile (SPEC 8.2 step 3). */
 export function lengthWeights(profile: Profile, lMax: number): number[] {

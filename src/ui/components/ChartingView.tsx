@@ -21,7 +21,7 @@ export function PrepareChart({ accepted, pending, bookingClosed, charting, onPre
         Prepare chart
       </button>
       <span className={`${s.hint} ${s.num}`}>
-        {!bookingClosed && 'Charting happens after the last request. Jump to the end to prepare the chart.'}
+        {!bookingClosed && 'Charting happens after the last request. Press End to close booking, then prepare the chart.'}
         {bookingClosed && !charting && `${plural(pending, 'accepted booking')} wait in the pending pool with no berth number.`}
         {charting && pending > 0 && `Placing earliest boarding first: ${accepted - pending} of ${accepted}.`}
         {charting && pending === 0 && `Chart prepared: all ${accepted} accepted bookings have berths.`}

@@ -56,8 +56,7 @@
 .heroNote { color: var(--on-night-2); font-size: var(--step--1); }
 
 /* ---------- Sections ---------- */
-.section { padding: var(--space-24) 0; }
-.section { --ring: var(--bg); }
+.section { padding: var(--space-24) 0; --ring: var(--bg); }
 .sectionAlt { --ring: var(--surface); background: var(--surface); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
 .sectionHead { display: flex; flex-direction: column; gap: var(--space-3); margin-bottom: var(--space-12); }
 .kicker { color: var(--brand); font-weight: 600; font-size: var(--step-0); }
@@ -65,15 +64,8 @@
 .lead { font-size: var(--step-1); line-height: 1.6; color: var(--ink-2); max-width: 40rem; }
 .split { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--space-16); align-items: center; }
 .stack { display: flex; flex-direction: column; gap: var(--space-4); }
-.split > *, .twoCol > *, .cards3 > *, .cards4 > * { min-width: 0; }
+.split > *, .twoCol > * { min-width: 0; }
 
-.cards3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-6); }
-.cards4 { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--space-4); }
-.card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-lg); padding: var(--space-8); display: flex; flex-direction: column; gap: var(--space-3); }
-.sectionAlt .card { background: var(--bg); }
-.card h3 { font-size: var(--step-1); font-weight: 700; letter-spacing: -0.005em; }
-.card p { color: var(--ink-2); }
-.stepNum { font-family: var(--font-display); font-weight: 500; font-size: 2.25rem; line-height: 1; color: var(--brand); }
 .tag { align-self: flex-start; font-size: 12px; font-weight: 700; color: var(--brand-strong); background: var(--brand-soft); border-radius: 999px; padding: 2px 10px; }
 
 .statTiles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-6); }
@@ -137,7 +129,7 @@
 .spanAll { grid-column: 1 / -1; }
 
 .chartWrap { position: relative; }
-.chartWrap svg { display: block; overflow: visible; }
+.chartWrap svg { display: block; overflow: visible; max-width: 100%; } /* never wider than the card, so a phone does not zoom out before the chart has measured itself */
 .tooltip {
   position: absolute; top: 0; pointer-events: none; z-index: 1;
   background: var(--ink); color: white; border-radius: 8px; padding: var(--space-2) var(--space-3);
@@ -163,7 +155,6 @@
 .theorem .kicker { color: var(--amber-bright); }
 .theorem blockquote { margin: 0; font-family: var(--font-display); font-weight: 500; font-size: clamp(1.6rem, 3vw, 2.35rem); line-height: 1.2; letter-spacing: -0.02em; max-width: 26ch; }
 .theorem p { color: var(--on-night); max-width: 42rem; }
-.list { margin: 0; padding-left: 1.2em; display: flex; flex-direction: column; gap: var(--space-2); color: var(--ink-2); max-width: 46rem; }
 .twoCol { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-6); }
 .verdict { border-radius: var(--radius-lg); padding: var(--space-6); display: flex; flex-direction: column; gap: var(--space-2); }
 .verdictRed { background: color-mix(in srgb, var(--signal-red) 7%, white); border: 1px solid color-mix(in srgb, var(--signal-red) 28%, white); }
@@ -175,8 +166,8 @@
 /* ---------- Responsive ---------- */
 @media (max-width: 900px) {
   .split, .twoCol, .chartGrid { grid-template-columns: minmax(0, 1fr); gap: var(--space-8); }
-  .cards3, .statTiles, .heroStats { grid-template-columns: minmax(0, 1fr); }
-  .cards4, .bandGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .statTiles, .heroStats { grid-template-columns: minmax(0, 1fr); }
+  .bandGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .section { padding: var(--space-16) 0; }
   .heroInner { padding-top: var(--space-16); }
   .heroArt { width: 100%; opacity: 0.35; }

@@ -117,6 +117,12 @@
 
 .muted { color: var(--ink-3); }
 
+/* Simple view (the default): only what the story needs. "Show all options" turns it off. */
+.simple .advanced { display: none !important; }
+.app:not(.simple) .simpleOnly { display: none !important; }
+.viewToggle { background: transparent; color: var(--on-night); border-color: rgba(255, 255, 255, 0.3); }
+.viewToggle:hover:not(:disabled) { background: rgba(255, 255, 255, 0.1); border-color: rgba(255, 255, 255, 0.5); }
+
 /* ---------- Sidebar & Sticky Columns ---------- */
 .sidebar, .side {
   position: sticky;
@@ -386,8 +392,6 @@
 .badgeAmber { background: color-mix(in srgb, var(--signal-amber) 20%, transparent); color: var(--signal-amber); }
 .badgeBlue { background: color-mix(in srgb, var(--coach-blue) 15%, transparent); color: var(--coach-blue); }
 
-.swatch { width: 8px; height: 8px; border-radius: 2px; display: inline-block; flex: none; }
-
 /* Transport & Dispatch Console */
 .transport {
   padding: 10px var(--space-3);
@@ -554,6 +558,7 @@
 .keyPending { background: repeating-linear-gradient(45deg, var(--coach-blue) 0 2px, color-mix(in srgb, var(--coach-blue) 12%, white) 2px 6px); border: 1px solid var(--coach-blue); }
 .keyFull { background: color-mix(in srgb, var(--signal-red) 14%, white); border: 2px solid var(--signal-red); }
 .keyRac { height: 5px; background: var(--signal-green); }
+.keyAdded { background: var(--signal-amber); }
 
 .chartScroll {
   overflow-x: auto;
@@ -607,6 +612,7 @@
 }
 .rejRed { background: var(--signal-red); color: white; }
 .rejAmber { background: var(--amber-bright); color: var(--amber-ink); }
+.rejGreen { background: var(--signal-green); color: white; }
 .rejChip:hover { border-color: var(--ink); transform: translateY(-1px); }
 .rejChip[aria-pressed="true"] { border-color: var(--ink); outline: 2px solid var(--ink); outline-offset: 1px; }
 .rejChip:focus-visible { outline: 2px solid var(--ink); outline-offset: 1px; }
@@ -644,9 +650,6 @@
 .table td { padding: 6px 8px; border-bottom: 1px solid var(--surface-2); color: var(--ink-2); }
 .table td.n, .table th.n { text-align: right; }
 .table tr.current td { font-weight: 700; color: var(--ink); background: color-mix(in srgb, var(--coach-blue) 10%, white); }
-
-.bigLine { font-size: var(--step-0); color: var(--ink-2); }
-.bigLine strong { font-size: var(--step-2); font-weight: 700; color: var(--ink); font-variant-numeric: tabular-nums; font-family: var(--font-mono); }
 
 /* ---------- Responsive ---------- */
 .wide { grid-template-columns: 310px minmax(0, 1fr); grid-template-areas: "header header" "sidebar main" "side side"; }

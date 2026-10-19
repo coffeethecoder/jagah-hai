@@ -148,3 +148,25 @@ Worse, the most confirmed passengers possible and a fitting RAC set can be incom
 **Proposition 6.3 (Tier 3 is an upper bound, per instance).** For any strategy, the passengers it seats form a set $S$ with $L(S) \le k + 2r$ (Corollary 2.1, ⇒). So $|S|$ is at most the Tier 3 value (Theorem 3 at $k + 2r$). *[property test 4]* ∎
 
 **Remark (no per-instance order between Tier 1 and Tier 2).** Tier 2 need not seat at least as many as Tier 1 on a given stream. With $k = 2$, $n = 4$ and the stream $[3,4), [1,2), [1,3), [2,4), [2,3), [3,4)$, First-fit rejects $[2,4)$ as strategy-induced, and that leaves room for $[2,3)$ and $[3,4)$: it seats 5. Deferred accepts $[2,4)$, fills segments 2 and 3, and must reject both: it seats 4. So fragmentation loss $S_2 - S_1$ is reported as a distribution over seeds, never asserted per instance (SPEC 4.1). *[`deferred.test.ts`]*
+
+---
+
+## 7. Proposition 7 (re-charting the waitlist)
+
+Added 2026-10-06 for the simulator's "Re-chart the waitlist" (`src/engine/recover.ts`). Draft; needs the same review as the rest.
+
+Let $S$ be the seated bookings, with $L(S) \le c$ on a pool of $c$ places, and $W$ the waitlisted ones. Call $T \subseteq W$ **feasible** iff $L(S \cup T) \le c$. By Theorem 1 that is exactly when $S \cup T$ has a $c$-assignment, so nobody in $S$ is dropped (some may change berth), and Theorem 2 gives the seating.
+
+**Algorithm R.** Sort $W$ by $\mathit{to}$, ties in any fixed order: $w_1, \dots, w_m$. Start with $G = \emptyset$. For $i = 1, \dots, m$: if $G \cup \{w_i\}$ is feasible, add $w_i$ to $G$.
+
+**Proposition 7.** $G$ is a largest feasible subset of $W$. *[`recover.test.ts`: equal to brute force over every subset of the waitlist]*
+
+*Proof.* Let $G_i$ be $G$ after step $i$. We show by induction on $i$ that some largest feasible set $O$ satisfies $O \cap \{w_1, \dots, w_i\} = G_i$. For $i = 0$ take any largest feasible set. Suppose it holds for $i - 1$ with $O$.
+
+- *R rejects $w_i$.* Then $G_{i-1} \cup \{w_i\}$ is infeasible. Since $G_{i-1} \subseteq O$, $w_i \notin O$ (a subset of a feasible set is feasible). So $O$ still agrees.
+- *R accepts $w_i$ and $w_i \in O$.* $O$ still agrees.
+- *R accepts $w_i$ and $w_i \notin O$.* If $O \cup \{w_i\}$ is feasible it is a larger feasible set, a contradiction. So the set $V$ of segments $j$ covered by $w_i$ with $\mathrm{load}_{S \cup O}(j) = c$ is non-empty; let $j^*$ be its smallest member. $G_{i-1} \cup \{w_i\}$ is feasible, so $\mathrm{load}_{S \cup G_{i-1}}(j^*) \le c - 1$, and therefore some $u \in O \setminus G_{i-1}$ covers $j^*$. By the induction hypothesis $u = w_t$ with $t > i$, so $u.\mathit{to} \ge w_i.\mathit{to}$. Thus $u$ covers every segment from $j^*$ to $w_i.\mathit{to} - 1$, which includes all of $V$. Let $O' = (O \setminus \{u\}) \cup \{w_i\}$. On a segment covered by both $u$ and $w_i$ the load is unchanged. A segment covered by $w_i$ but not $u$ lies before $j^*$, so it is not in $V$ and its load rises to at most $c$. Elsewhere the load does not rise. So $O'$ is feasible, $|O'| = |O|$, and $O'$ agrees with $G_i$ on $w_1, \dots, w_i$ ($u$ comes later).
+
+At $i = m$, $G = O$ for a largest feasible $O$. ∎
+
+**Remarks.** (i) Only strategy-induced rejections can be recovered while no one cancels: a forced rejection has a segment that already carries $c$ seated passengers, and they all stay. So Tier 2 recovers nobody. (ii) Algorithm R maximises the number of passengers, not waitlist order: it may seat two later short journeys instead of one earlier long one. (iii) With RAC the simulator applies R to the confirmed pool and then, for those left, to the RAC pool. That is a valid seating in which nobody changes pool, but it is not claimed to be the joint maximum over both pools.

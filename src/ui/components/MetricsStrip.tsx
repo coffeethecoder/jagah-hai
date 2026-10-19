@@ -16,7 +16,7 @@ export function MetricsStrip({ view, racBerths }: { view: SimView; racBerths: nu
       </div>
 
       {racBerths > 0 && (
-        <div className={s.stat} title="Seated in RAC places, two passengers to a side-lower berth">
+        <div className={`${s.stat} ${s.advanced}`} title="Seated in RAC places, two passengers to a side-lower berth">
           <span className={s.statValue}>{counts.rac}</span>
           <span className={s.statLabel}>
             <span className={`${s.statBadge} ${s.badgeGreen}`}>RAC</span>
@@ -45,11 +45,11 @@ export function MetricsStrip({ view, racBerths }: { view: SimView; racBerths: nu
         <span className={s.statValue}>{counts.strategyInduced}</span>
         <span className={s.statLabel}>
           <span className={`${s.statBadge} ${s.badgeAmber}`}>FRAG</span>
-          Assignment
+          Fragmented
         </span>
       </div>
 
-      <div className={s.stat} title="Seated so far divided by the most any seating could fit for the requests so far">
+      <div className={`${s.stat} ${s.advanced}`} title="Seated so far divided by the most any seating could fit for the requests so far">
         <span className={s.statValue}>{ratio(view.ratio)}</span>
         <span className={s.statLabel}>
           <span className={`${s.statBadge} ${s.badgeBlue}`}>RATIO</span>

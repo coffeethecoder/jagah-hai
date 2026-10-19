@@ -16,7 +16,7 @@ export function Playback({ step, total, playing, speed, onStep, onTogglePlay, on
           {playing ? 'Pause' : done && step > 0 ? 'Replay' : 'Dispatch'}
           <kbd className={s.kbd}>␣</kbd>
         </button>
-        <button type="button" className={s.button} onClick={onStep} disabled={done} title="Next request (Right arrow)">
+        <button type="button" className={`${s.button} ${s.advanced}`} onClick={onStep} disabled={done} title="Next request (Right arrow)">
           Step
           <kbd className={s.kbd}>→</kbd>
         </button>
@@ -37,7 +37,7 @@ export function Playback({ step, total, playing, speed, onStep, onTogglePlay, on
         <div className={s.track}><span style={{ width: `${total === 0 ? 0 : (100 * step) / total}%` }} /></div>
       </div>
 
-      <label className={s.speed}>
+      <label className={`${s.speed} ${s.advanced}`}>
         <span>SPEED: <span className={s.num}>{speed}</span>/s</span>
         <input type="range" min={1} max={60} step={1} value={speed} onChange={(e) => onSpeed(Number(e.target.value))} />
       </label>

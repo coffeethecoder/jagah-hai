@@ -1,8 +1,8 @@
 // A small reservation chart for explanations: stations across the top, one row per berth or request.
 import c from '../styles/site.module.css';
 
-export interface DiagramBar { from: number; to: number; text: string; kind: 'seated' | 'free' | 'request' }
-export interface DiagramRow { label: string; bars: DiagramBar[] }
+interface DiagramBar { from: number; to: number; text: string; kind: 'seated' | 'free' | 'request' }
+interface DiagramRow { label: string; bars: DiagramBar[] }
 
 const KIND = { seated: c.barSeated, free: c.barFree, request: c.barRequest };
 

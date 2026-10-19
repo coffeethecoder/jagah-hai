@@ -10,7 +10,7 @@ export function RequestTicker({ route, view, coach }: { route: Route; view: SimV
       <div className={s.ticker}>
         <div className={s.tickerTop}>
           <span className={s.ticketPnr}>STATUS // IDLE</span>
-          <span className={s.ticketSegments}>Awaiting dispatch. Press Play or Step to process passenger stream.</span>
+          <span className={s.ticketSegments}>Awaiting dispatch. Press Dispatch or Step to process the passenger stream.</span>
         </div>
       </div>
     );

@@ -14,12 +14,12 @@ export function TierComparison({ runs, current, total, racBerths }: Props) {
 
   return (
     <div className={s.section}>
-      <h2>Policy Benchmark (Full Stream)</h2>
+      <h2>All strategies, same passengers</h2>
       <p className={s.hint}>Stream totals across all {total} reservation requests:</p>
       <div className={s.tableWrap}><table className={s.table}>
         <thead>
           <tr>
-            <th>Strategy</th><th className={s.n}>Tier</th><th className={s.n}>Seated</th>{racBerths > 0 && <th className={s.n}>of which RAC</th>}<th className={s.n}>Assignment</th>
+            <th>Strategy</th><th className={s.n}>Tier</th><th className={s.n}>Seated</th>{racBerths > 0 && <th className={s.n}>of which RAC</th>}<th className={s.n}>Fragmented</th>
             <th className={s.n}>Ratio</th><th className={s.n}>Lost seats</th>
           </tr>
         </thead>

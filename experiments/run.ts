@@ -9,7 +9,7 @@ import {
   type DemandConfig, type Route, type StrategyId,
 } from '../src/engine';
 
-export interface ExperimentConfig {
+interface ExperimentConfig {
   name: string;
   routes: string[];
   berths: number[];

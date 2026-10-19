@@ -9,7 +9,7 @@ import s from '../styles/ui.module.css';
 /** Column geometry shared with LoadProfile so the two line up; the column width follows the container. */
 export const LABEL_W = 64;
 /** Room after the last column for the terminus code, so it never collides with the code before it. */
-export const END_PAD = 44;
+const END_PAD = 44;
 /** Grid x-coordinate of segment j (or the terminus, j = n). */
 export const segmentAt = (colW: number) => (j: number) => LABEL_W + j * colW;
 /** Column width that fills `available` pixels, within limits that keep codes and bars legible. */
@@ -25,7 +25,7 @@ const GHOST: Record<string, { fill: 'green' | 'hatch' | 'red' | 'amber'; label: 
   placed: { fill: 'green', label: 'Seated' },
   pending: { fill: 'hatch', label: 'Pending' },
   forced: { fill: 'red', label: 'Full here' },
-  'strategy-induced': { fill: 'amber', label: 'Assignment' },
+  'strategy-induced': { fill: 'amber', label: 'Fragmented' },
 };
 
 export const tooltip = (route: Route, b: Booking) =>
@@ -82,13 +82,14 @@ interface Props {
   highlightSegment?: number | null;    // proof panel: the full segment of the confirmed pool, tinted red
   emphasis?: Set<number> | null;       // proof panel: outline these bookings, fade the rest
   rejected?: Seat | null;              // witness: the rejected passenger, in amber
+  added?: Set<number> | null;          // re-chart: waitlisted passengers who now have a place, in amber
   animateEntry?: boolean;              // charting: bars grow in as they are placed
   placeholder?: string | null;         // a line of help across an empty grid
 }
 
 // ponytail: SVG only; SPEC 13.4's canvas fallback above 5000 cells is not needed (largest shipped route: 4248 cells).
 export function CoachGrid({
-  route, berths, racBerths, colW, seated, current = null, ghostRow = true, highlightSegment = null, emphasis = null, rejected = null, animateEntry = false,
+  route, berths, racBerths, colW, seated, current = null, ghostRow = true, highlightSegment = null, emphasis = null, rejected = null, added = null, animateEntry = false,
   placeholder = null,
 }: Props) {
   const hatchId = useId();
@@ -173,8 +174,8 @@ export function CoachGrid({
         const outlined = emphasis ? emphasis.has(seat.booking.id) : isCurrent(seat);
         return (
           <rect key={`${seat.pool}-${seat.booking.id}`} {...bar(seat)} className={animateEntry ? s.grow : undefined}
-            style={{ fill: 'var(--signal-green)', fillOpacity: emphasis && !outlined ? 0.3 : 1, stroke: outlined ? 'var(--ink)' : 'none', strokeWidth: 2 }}>
-            <title>{`${tooltip(route, seat.booking)}${seat.pool === 'rac' ? '\nRAC (shared berth)' : ''}`}</title>
+            style={{ fill: added?.has(seat.booking.id) ? 'var(--signal-amber)' : 'var(--signal-green)', fillOpacity: emphasis && !outlined ? 0.3 : 1, stroke: outlined ? 'var(--ink)' : 'none', strokeWidth: 2 }}>
+            <title>{`${tooltip(route, seat.booking)}${seat.pool === 'rac' ? '\nRAC (shared berth)' : ''}${added?.has(seat.booking.id) ? '\nSeated from the waitlist' : ''}`}</title>
           </rect>
         );
       })}

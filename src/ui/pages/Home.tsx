@@ -129,7 +129,7 @@ export function Home() {
       <section className={c.section}>
         <div className={`${c.container} ${c.stack}`} style={{ alignItems: 'flex-start', gap: 'var(--space-6)' }}>
           <h2 className={c.h2}>Watch a train fill up, one booking at a time.</h2>
-          <p className={c.lead}>Press Play, then click any waitlisted passenger to see the proof.</p>
+          <p className={c.lead}>Press Dispatch, then click any waitlisted passenger to see the proof.</p>
           <div className={c.ctaRow}>
             <Link to="/simulator" className={`${c.btn} ${c.btnPrimary}`}>Open the simulator</Link>
             <Link to="/method" className={`${c.btn} ${c.btnLight}`}>Read the method</Link>

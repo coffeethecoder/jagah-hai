@@ -19,8 +19,8 @@ function ProofBody({ route, coach, event, requests, colW }: Props) {
   if (!event || event.outcome.kind !== 'rejected') {
     return (
       <div className={s.section}>
-        <h2>Allocation Certificate</h2>
-        <p className={s.muted}>Select a waitlisted passenger above to inspect their certificate.</p>
+        <h2>Why they were waitlisted</h2>
+        <p className={s.muted}>Click a booking number above to see the proof.</p>
       </div>
     );
   }
@@ -33,7 +33,7 @@ function ProofBody({ route, coach, event, requests, colW }: Props) {
     const racFull = slots > 0 ? Array.from({ length: b.to - b.from }, (_, i) => b.from + i).find((j) => event.racLoad[j] === slots) ?? null : null;
     return (
       <div className={s.section}>
-        <h2>Allocation Certificate</h2>
+        <h2>Why they were waitlisted</h2>
         {title}
         <p className={`${s.callout} ${s.calloutRed}`}>
           <span className={`${s.chip} ${s.chipRed}`}>Full here</span>{' '}
@@ -57,10 +57,10 @@ function ProofBody({ route, coach, event, requests, colW }: Props) {
   const everyone = Object.entries(c.witness).map(([id, index]) => ({ booking: requests[Number(id)], pool: c.pool, index }));
   return (
     <div className={s.section}>
-      <h2>Allocation Certificate</h2>
+      <h2>Why they were waitlisted</h2>
       {title}
       <p className={`${s.callout} ${s.calloutAmber}`}>
-        <span className={`${s.chip} ${s.chipAmber}`}>Assignment</span>{' '}
+        <span className={`${s.chip} ${s.chipAmber}`}>Fragmented</span>{' '}
         {rac && 'Confirmed berths were full on part of this journey, but RAC was not. '}
         Every segment of this journey still had a free {place}. The busiest carried {c.maxLoadOnRange} of {capacity}.
         Earlier choices left no single {place} free end to end.

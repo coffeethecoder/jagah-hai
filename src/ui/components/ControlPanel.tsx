@@ -35,14 +35,14 @@ export function ControlPanel({ config, routes, onChange }: Props) {
             {routes.map((r) => <option key={r.id} value={r.id}>{r.name}</option>)}
           </select>
         </label>
-        <div className={s.field}>
+        <div className={`${s.field} ${s.advanced}`}>
           <span id="berths-label">Coach</span>
           <div className={s.seg} role="group" aria-labelledby="berths-label">
             <button type="button" aria-pressed={config.berths === 72} onClick={() => onChange({ berths: 72 })}>Sleeper, 72</button>
             <button type="button" aria-pressed={config.berths === 16} onClick={() => onChange({ berths: 16 })}>Mini, 16</button>
           </div>
         </div>
-        <label className={s.field}>
+        <label className={`${s.field} ${s.advanced}`}>
           RAC berths (two passengers share each)
           <select value={config.racBerths} onChange={(e) => onChange({ racBerths: Number(e.target.value) })}>
             {Array.from({ length: 10 }, (_, r) => <option key={r} value={r}>{r === 0 ? 'None' : `${r} (${2 * r} places)`}</option>)}
@@ -52,7 +52,7 @@ export function ControlPanel({ config, routes, onChange }: Props) {
 
       <div className={s.group}>
         <h2 className={s.groupTitle}>02 // Traffic Demand & Seed</h2>
-        <label className={s.field}>
+        <label className={`${s.field} ${s.advanced}`}>
           Trip lengths
           <select value={config.scenario} onChange={(e) => onChange({ scenario: e.target.value as SimConfig['scenario'] })}>
             {SCENARIOS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
@@ -65,12 +65,12 @@ export function ControlPanel({ config, routes, onChange }: Props) {
             onChange={(e) => onChange({ demandFactor: Number(e.target.value) })}
           />
         </label>
-        <label className={`${s.field} ${s.inline}`}>
+        <label className={`${s.field} ${s.inline} ${s.advanced}`}>
           <input type="checkbox" checked={config.tatkal} onChange={(e) => onChange({ tatkal: e.target.checked })} />
           Tatkal surge at the end
         </label>
         {config.tatkal && (
-          <label className={s.field}>
+          <label className={`${s.field} ${s.advanced}`}>
             Tatkal share of demand
             <input
               type="number" min={0.05} max={0.5} step={0.05} value={config.tatkalFraction}
@@ -81,7 +81,7 @@ export function ControlPanel({ config, routes, onChange }: Props) {
             />
           </label>
         )}
-        <div className={s.row}>
+        <div className={`${s.row} ${s.advanced}`}>
           <label className={s.field}>
             Seed
             <input
@@ -97,7 +97,7 @@ export function ControlPanel({ config, routes, onChange }: Props) {
             New seed
           </button>
         </div>
-        <p className={s.hint}>The seed fixes the stream of requests: the same seed always gives the same passengers.</p>
+        <p className={`${s.hint} ${s.advanced}`}>The seed fixes the stream of requests: the same seed always gives the same passengers.</p>
       </div>
 
       <div className={s.group}>
@@ -111,12 +111,12 @@ export function ControlPanel({ config, routes, onChange }: Props) {
             </label>
           ))}
         </fieldset>
-        <label className={`${s.field} ${s.inline}`}>
+        <label className={`${s.field} ${s.inline} ${s.advanced}`}>
           <input type="checkbox" checked={config.compare} onChange={(e) => onChange({ compare: e.target.checked })} />
           Compare with another strategy
         </label>
         {config.compare && (
-          <label className={s.field}>
+          <label className={`${s.field} ${s.advanced}`}>
             Compare with
             <select value={config.compareWith} onChange={(e) => onChange({ compareWith: e.target.value as OnlineStrategy })}>
               {STRATEGIES.filter((o) => o.value !== config.strategy).map((o) => <option key={o.value} value={o.value}>{o.name}: {o.hint.toLowerCase()}</option>)}
@@ -125,7 +125,7 @@ export function ControlPanel({ config, routes, onChange }: Props) {
         )}
       </div>
 
-      <p className={s.hint}>Keys: Space plays or pauses, the right arrow steps, R resets.</p>
+      <p className={`${s.hint} ${s.advanced}`}>Keys: Space plays or pauses, the right arrow steps, R resets.</p>
     </section>
   );
 }

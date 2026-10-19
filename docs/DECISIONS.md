@@ -139,3 +139,19 @@ Replaced generic dashboard tropes with authentic Indian Railways PRS (Passenger 
 - **Tactile Reservation Dispatch Console**: Mechanical key feel for dispatch controls with keyboard badges (`␣`, `→`, `⏭`, `R`) and odometer tracker.
 - **PNR Ticket Ticker**: Reservation requests displayed as live ticket slips with PNR numbers, journey tags, and official outcome stamps.
 - **Waitlist Manifest (WL) & Allocation Certificate**: Transformed rejections and proofs into railway ledger and certification sheets.
+
+## 2026-10-06 — "Re-chart the waitlist" added (user request; beyond SPEC)
+The proof panel showed a seating for one waitlisted passenger at a time. The user asked for one chart that seats as many of the waitlist as possible. Added `recoverWaitlist` (`src/engine/recover.ts`, written from scratch): keep everyone already seated, add the largest set of waitlisted bookings that still fits (greedy by earliest alighting; proof in docs/MATH.md Section 7; cross-checked against brute force, 500 cases). The simulator offers it once booking has closed, for Tier 1 strategies, outside compare mode. No Section 3 definition changed; the strategies, metrics and experiment results are untouched, so the counters still report what the strategy itself did. With RAC it runs per pool (confirmed, then RAC) and does not claim a joint maximum.
+
+## 2026-10-17 — Clean-up pass, one name per rejection kind
+- **Dead code removed:** unused CSS classes (`swatch`, `bigLine`, `card`, `cards3`, `cards4`, `list`, `stepNum`), a duplicated `.section` rule, unused tokens (`--night-2`, `--red-bright`, `--radius-sm`, `--step-3` to `--step-5`), and `export` on five names nothing outside their file used.
+- **One name for each kind of rejection, everywhere in the app:** "Full here" (red, SPEC's forced) and "Fragmented" (amber, SPEC's strategy-induced). The amber case had been called Assignment, Fragmented, Packing loss and Frag in different panels. Definitions in SPEC Section 3 are unchanged; only the labels moved.
+- **Copy:** hints that still said "Play" and "Jump to the end" now name the current buttons, Dispatch and End.
+- **Phones:** Findings charts could be wider than the screen on first render, which made phones zoom the whole page out; the chart SVG is now capped at its card's width.
+
+## 2026-10-19 — Simple view by default; re-chart moved into the engine (user request: "looks complex")
+- **Simple view:** the simulator now opens showing only what the demo story needs (route, demand, strategy; Dispatch, End, Reset; four counters; the chart; the waitlist and its proof; a three-line comparison). "Show all options" brings back everything in SPEC 13.4: coach, RAC, trip lengths, tatkal, seed, Step, speed, compare mode, the request ticker, the load bars, the full comparison table and the unbounded panel. Nothing was removed. It is one CSS rule (`.simple .advanced`), not a flag passed through every component.
+- **Plain panel titles:** Waitlist Manifest (WL) became "Waitlisted passengers", Allocation Certificate "Why they were waitlisted", Policy Benchmark "All strategies, same passengers", Unbounded Coach Bound "With unlimited berths", and the chart legend uses plain words.
+- **Automatic speed:** until the slider is moved, playback runs a whole stream in about 9 seconds whatever its size (10 to 60 requests a second), instead of a fixed 10 a second.
+- **Re-chart in the engine:** the pool-by-pool logic moved from the React hook into `rechart()` in `src/engine/recover.ts`, with a property test (nobody changes pool, no two overlapping trips share a place, and with r = 0 it equals brute force).
+- **Deleted:** `analysis/figures/.gitkeep` (the folder has tracked files) and the generated `dist/` and `coverage/` folders.

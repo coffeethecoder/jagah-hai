@@ -1,7 +1,7 @@
 // Config + playback state machine. Calls the engine; components only render what this returns.
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
-  generateDemand, parseRoute, runOfflineOptimum, runOnline, selectOptimum,
+  generateDemand, parseRoute, rechart, runOfflineOptimum, runOnline, selectOptimum,
   type Booking, type DemandConfig, type Pool, type Route, type RunResult, type StepEvent,
 } from '../../engine';
 
@@ -117,9 +117,10 @@ export function useSimulation() {
   const [config, setConfigState] = useState<SimConfig>(DEFAULT_CONFIG);
   const [step, setStep] = useState(0);
   const [playing, setPlaying] = useState(false);
-  const [speed, setSpeed] = useState(10); // requests per second
+  const [chosenSpeed, setSpeed] = useState<number | null>(null); // requests per second; null = automatic
   const [chartPlaced, setChartPlaced] = useState<number | null>(null); // Tier 2 bookings placed by the chart
   const [selected, setSelected] = useState<number | null>(null);       // booking id of the rejection in the proof panel
+  const [recharted, setRecharted] = useState(false);                   // Tier 1: showing the re-charted waitlist
 
   const route = ROUTES.find((r) => r.id === config.routeId) ?? ROUTES[0];
   const n = route.stations.length - 1;
@@ -140,6 +141,7 @@ export function useSimulation() {
   }, [requests, route, coach, config.seed]);
 
   const total = requests.length;
+  const speed = chosenSpeed ?? Math.min(60, Math.max(10, Math.round(total / 9))); // a full stream takes about 9 s
   const compareWith = config.compareWith === config.strategy ? ONLINE.find((s) => s !== config.strategy)! : config.compareWith;
   // O(step²); kept apart from the views so charting frames do not recompute it.
   const places = config.berths + 2 * config.racBerths;
@@ -156,6 +158,7 @@ export function useSimulation() {
   const goTo = useCallback((next: number | ((s: number) => number)) => {
     setStep(next);
     setChartPlaced(null);
+    setRecharted(false);
   }, []);
 
   const setConfig = useCallback((patch: Partial<SimConfig>) => {
@@ -202,6 +205,21 @@ export function useSimulation() {
     return () => clearTimeout(id);
   }, [chartPlaced, chartStart, toChart]);
 
+  // Re-chart (docs/MATH.md Section 7): once booking has closed, keep everyone seated and add the most waitlisted
+  // passengers that still fit. Tier 2 has nothing to recover: all its rejections are forced.
+  const recovery = useMemo(() => {
+    const run = runs[config.strategy];
+    if (step !== total || run.tier !== 1) return null;
+    const placedIn = (pool: Pool) => run.events.flatMap((e) => (e.outcome.kind === 'placed' && e.outcome.pool === pool ? [e.booking] : []));
+    const waitlisted = run.events.flatMap((e) => (e.outcome.kind === 'rejected' ? [e.booking] : []));
+    const { assignment, added } = rechart({ confirmed: placedIn('confirmed'), rac: placedIn('rac') }, waitlisted, coach, n);
+    const seats: Seat[] = (['confirmed', 'rac'] as const).flatMap((pool) =>
+      Object.entries(assignment[pool]).map(([id, index]) => ({ booking: requests[Number(id)], pool, index })));
+    const load = { confirmed: new Array<number>(n).fill(0), rac: new Array<number>(n).fill(0) };
+    for (const { booking: b, pool } of seats) for (let j = b.from; j < b.to; j++) load[pool][j]++;
+    return { seats, added: new Set(added.map((b) => b.id)), load, waitlisted: waitlisted.length };
+  }, [runs, config.strategy, coach, step, total, n, requests]);
+
   // A selection disappears if playback moves back before that rejection.
   const selectedEvent = view.rejections.find((e) => e.booking.id === selected) ?? null;
 
@@ -229,6 +247,7 @@ export function useSimulation() {
     config, setConfig, route, requests, runs, view, compareView,
     selected: selectedEvent, select: setSelected,
     prepareChart,
+    recovery, recharted, toggleRechart: () => setRecharted((x) => !x),
     playback: { playing, speed, setSpeed, stepForward, reset, jumpToEnd, togglePlay },
   };
 }
