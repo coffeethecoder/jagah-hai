@@ -1,6 +1,6 @@
 # Talk and demo script
 
-Three slides, then the simulator. About 7 minutes; the cuts for a 4-minute version are listed below.
+Four slides, then the simulator. About 9 minutes in full; the cuts below bring it to about 6.
 Deck: https://claude.ai/artifact/X893R79S2jxKNJVcDj5eR9
 
 ## Plan
@@ -8,9 +8,10 @@ Deck: https://claude.ai/artifact/X893R79S2jxKNJVcDj5eR9
 | Part | Time |
 |---|---|
 | Slide 1: the question | 0:20 |
-| Slide 2: the problem, what exists, our solution | 1:20 |
-| Slide 3: the maths, and why TypeScript | 2:00 |
-| Demo on the simulator | 2:50 |
+| Slide 2: it happens in real life | 0:40 |
+| Slide 3: the problem, what exists, our solution | 1:30 |
+| Slide 4: the maths, and why TypeScript | 2:15 |
+| Demo on the simulator | 3:20 |
 | Closing | 0:15 |
 
 The whole talk answers one question: **when you are waitlisted, is the train really full?** Every part comes back to it.
@@ -24,15 +25,18 @@ Say these two in your own words early, and keep using exactly these names.
 
 The words below are how you might say it, not lines to memorise.
 
-**For a 4-minute version,** cut these. Together they save about 2:30, which brings it to about 4:15.
+**For a shorter version,** make these cuts. Together they save about 3 minutes, which brings it to about 6. Keep the Concept lines in the demo: they are what links the maths to the app.
 
-1. Slide 2: say "what exists" in one sentence (saves 0:15).
-2. Slide 3: one sentence per concept, and skip the transitivity example (saves 0:50).
-3. Slide 3: skip TypeScript; keep it for questions (saves 0:20).
-4. Demo step 1: just "rows are berths, columns are stretches" (saves 0:10).
-5. Demo step 3: skip "Show a seating"; re-chart in step 4 makes the same point (saves 0:15).
-6. Demo step 5: keep only the first paragraph (saves 0:20).
-7. Slide 1: skip the second sentence (saves 0:10).
+1. Slide 1: skip the second sentence (saves 0:10).
+2. Slide 2: say only the first card and the last line (saves 0:25).
+3. Slide 3: say "what exists" in one sentence (saves 0:15).
+4. Slide 4: one sentence per concept, since the demo names each one again, and skip the transitivity example (saves 0:50).
+5. Slide 4: skip TypeScript; keep it for questions (saves 0:20).
+6. Demo step 1: just "rows are berths, columns are stretches" (saves 0:10).
+7. Demo step 3: skip "Show a seating"; re-chart in step 4 makes the same point (saves 0:20).
+8. Demo step 5: keep only the first paragraph (saves 0:25).
+
+For a strict 4 to 5 minutes, also drop slide 2, the "what exists" strip on slide 3 and demo step 5, and keep them for questions.
 
 ## Before you start
 
@@ -49,111 +53,153 @@ The words below are how you might say it, not lines to memorise.
 
 ### Slide 1: The question (0:20)
 
-> Hi everyone, I'm Neel. Most of us have been on a train waiting list, and then walked through that same train and seen empty berths.
+> Hi everyone, I'm Neel. Most of us have been on a train waiting list. And then we got on that same train and saw empty berths.
 >
-> So my project asks one question: when you're waitlisted, is the train really full? I'll show you the problem, the maths behind it, and then the app I built to answer it.
-
-### Slide 2: The problem, and our solution (1:20)
-
-Point at the small chart on the left.
-
-> Here's the smallest example. Two berths, Mumbai to Delhi, through Surat. Berth 1 is free till Surat, and berth 2 is free after Surat.
+> So my project asks one simple question: when you are waitlisted, is the train really full?
 >
-> Someone wants to go all the way. There's a free berth on both halves of the trip, but they're still waitlisted, because no single berth is free from start to end, and you can't change berths halfway.
->
-> So there are two reasons you can be waitlisted. Either some part of your journey is genuinely full: I'll show that in red and call it "full here". Or there was room everywhere, just in the wrong places, because of how earlier berths were given out: that's amber, "fragmented".
+> I'll show you the problem, the maths behind it, and then the app I built to answer it.
 
-Point at the strip at the bottom.
-
-> Apps like ConfirmTkt predict whether your waitlist will confirm. The Railways' own AI, Ideal Train Profile, adjusts quotas between stations. And a research paper, "The Seat Reservation Problem", studies the worst case in theory. None of them tells a passenger which of the two reasons it was.
-
-Point at the list on the right.
-
-> So I built a simulator that replays a real train's bookings, and for every waitlisted passenger proves whether it was red or amber. Then it re-charts the coach to seat as many waitlisted people as possible, and it compares five ways of giving out berths on exactly the same passengers.
-
-### Slide 3: Where discrete maths comes in (2:00)
-
-Point at the line under the title.
-
-> Everything starts from one modelling choice. A booking is an interval on the route, from where you board up to where you get off. If I get off at Surat and you board at Surat, our intervals only touch, so we can share a berth.
+### Slide 2: It happens in real life (0:40)
 
 Point at each card in turn.
 
-> Relations: two bookings are related if they overlap. It's reflexive and symmetric, but not transitive. Mumbai to Surat overlaps Mumbai to Delhi, which overlaps Surat to Delhi, but Mumbai to Surat and Surat to Delhi only touch. The app checks this relation every time it looks for a free berth.
+> First, this is a real problem. RTI data from this year says that in 2025–26, 3.39 crore people could not travel. Their waitlisted ticket never got confirmed.
 >
-> Partial orders: one booking comes before another if it ends before the other starts. The passengers on one berth form a chain. Passengers who all overlap form an antichain, so each needs a different berth.
+> But berths do go empty. In 2022, ticket checkers on running trains were finding about 7,000 empty berths every day. About 2,700 waitlisted people a day got one of them.
 >
-> Functions and pigeonhole: a seating is a function from bookings to berths. If one stretch already has 72 people on 72 berths, a 73rd can't fit. That's the proof behind every red rejection.
+> And since 2016, the Railways give berths that are still empty after the final chart to waitlisted people at later stations.
+
+Point at the line at the bottom.
+
+> Berths go empty for many reasons, like no-shows and cancellations. My project looks at one reason: the way berths are given out when people book.
+
+### Slide 3: The problem, and our solution (1:30)
+
+Point at the small chart on the left.
+
+> Here is the smallest example. A coach with two berths, going from Mumbai to Delhi through Surat. Berth 1 is free from Mumbai to Surat. Berth 2 is free from Surat to Delhi.
 >
-> Graph colouring: make each booking a vertex and join two that overlap. Giving out berths is colouring this graph, and each strategy is a different colouring rule.
+> Now someone wants to go from Mumbai all the way to Delhi. Each half of the trip has a free berth. But no single berth is free for the whole trip, and you can't change berths halfway. So this person is waitlisted.
+>
+> So there are two reasons you can be waitlisted. One: the train really is full on some part of your trip. I'll show that in red, and call it "full here". Two: there was space on every part of your trip, just not on one berth. That happens because of how earlier berths were given out. I'll show that in amber, and call it "fragmented".
+
+Point at the strip at the bottom.
+
+> What exists today? Apps like ConfirmTkt guess whether your waitlist will clear. The Railways have an AI system that adjusts seat quotas between stations. And there is a research paper on the worst case, in theory. But none of them tells you which of the two reasons it was.
+
+Point at the list on the right.
+
+> So I built a simulator. It replays a real train's bookings, one by one. For every waitlisted person, it proves whether the reason was red or amber. Then it re-plans the berths to fit in as many waitlisted people as possible. And it compares five different rules for giving out berths, on exactly the same passengers.
+
+### Slide 4: Where discrete maths comes in (2:15)
+
+Point at the line under the title.
+
+> First, how I turn the train into maths. A booking is just a piece of the route. It runs from the station where you get on to the station where you get off. If I get off at Surat and you get on at Surat, our trips don't overlap. So we can use the same berth.
+
+Point at each card in turn.
+
+> Relations. Two bookings are related if their trips overlap. This relation is reflexive and symmetric, but not transitive. For example, Mumbai–Surat overlaps Mumbai–Delhi, and Mumbai–Delhi overlaps Surat–Delhi. But Mumbai–Surat and Surat–Delhi don't overlap. The app uses this check every time it looks for a free berth.
+>
+> Partial orders. Say one trip comes "before" another if it ends before the other one starts. Then the passengers on one berth form a chain: one after another. Passengers whose trips all overlap form an antichain: each of them needs their own berth.
+>
+> Functions and pigeonhole. Giving out berths is a function: each passenger goes to one berth. If one stretch already has 72 people and there are only 72 berths, a 73rd person can't fit. That's the pigeonhole principle, and it is how the app proves a red rejection.
+>
+> Graph colouring. Draw each booking as a dot, and join two dots if their trips overlap. Giving out berths is colouring the dots: each berth is a colour, and joined dots need different colours. Each rule in my app is a different way of colouring.
 
 Point at the dark box.
 
-> This theorem ties it together. The bookings fit in k berths exactly when no stretch has more than k people on it. One direction is pigeonhole. For the other, seat people in boarding order on the lowest free berth, and it never gets stuck. That's how the app proves an amber rejection: it builds a seating that fits everyone.
+> And one theorem ties it all together. The bookings fit in k berths if and only if no stretch of the route has more than k people. One direction is pigeonhole. For the other, seat people in the order they get on, each on the lowest free berth. That never gets stuck. And it is how the app proves an amber rejection: it actually builds a seating where everyone fits.
 
 No slide for this; say it before you switch.
 
-> I wrote it all in TypeScript, every algorithm from scratch. Mainly because the same code runs in the browser and on my laptop, so this demo uses the exact engine my experiments used. And strict types catch mistakes like mixing up a booking number with a berth number.
+> Quickly, about the language. I wrote everything in TypeScript, and every algorithm from scratch. The main reason: the same code runs in the browser and on my laptop. So this demo uses the exact engine from my experiments. TypeScript's strict types also catch silly mistakes, like mixing up a booking number and a berth number.
 >
 > Okay, let me show you.
 
 Switch to the browser.
 
-## The demo (2:50)
+## The demo (3:20)
+
+Each step below has a **Concept** line: the idea from slide 4 that the audience is looking at in that moment. Name it in one sentence, then move on. Slide 4 explained it; the demo shows it working.
 
 ### 1. Read the chart (0:20)
 
 Do: nothing yet. Point at the chart, then the left panel.
 
-> This is one sleeper coach of the Punjab Mail, Mumbai to Firozpur, 54 stops. Each row is a berth, 72 of them. Each column is the stretch between two stations. A green bar will be one passenger's trip.
+> This is one sleeper coach of the Punjab Mail, from Mumbai to Firozpur, with 54 stops. Each row is a berth, and there are 72 of them. Each column is the stretch between two stations. Each green bar will be one passenger's trip.
 >
-> On the left I've set up a busy day: 361 booking requests, about 1.4 times what this coach can hold.
+> I've set up a busy day: 361 booking requests. That's about 1.4 times what this coach can hold.
 
-### 2. Fill the coach (0:30)
+### 2. Fill the coach (0:45)
 
-Do: click **Dispatch**. Click it with the mouse, not the space bar. It takes about 10 to 15 seconds.
+Concept: **graph colouring** and the **overlap relation**, then **chains**.
 
-> I'll start the bookings. The rule here is First-fit, the simplest colouring: each passenger gets the lowest-numbered berth that is free for their trip.
+Do: click **Dispatch**. Click it with the mouse, not the space bar. It takes about 10 to 15 seconds, so talk while it fills.
 
-When it stops, point at the counters along the top.
+> Let me start the bookings. The rule here is First-fit: each passenger gets the lowest-numbered berth that is free for their whole trip. In graph terms, that's greedy colouring. And the question "is this berth free?" is the overlap relation from the slide.
+
+When it stops, point at any one row of the chart.
+
+> Look at any one row. The bars never overlap: each trip ends before the next one starts. So every row is a chain.
+
+Point at the counters along the top.
 
 > 271 people got a berth, and 90 were waitlisted.
 >
-> Now the important part. "Full here", the red one, is zero. "Fragmented", the amber one, is 90. So not one of those 90 people was turned away because the train was full.
+> Now look at these two numbers. "Full here", in red, is zero. "Fragmented", in amber, is 90. So not one of these 90 people was turned away because the train was full.
 
-### 3. One passenger, and the proof (0:30)
+### 3. One passenger, and the proof (0:40)
+
+Concept: **the theorem**, and a **constructive proof**.
 
 Do: in **Waitlisted passengers** on the right, click **#207**.
 
-> Let's take one of them, passenger 207, Mumbai to Lalitpur. The app says every stretch of that trip still had a free berth. Even the busiest stretch had only 69 of 72 taken.
+> Let's pick one of them: passenger 207, from Mumbai to Lalitpur. The app says every stretch of this trip still had a free berth. The busiest stretch had 69 of the 72 berths taken. 69 is less than 72, so the theorem says a seating that includes this person must exist.
 
 Do: scroll down past the small table and click **Show a seating that fits everyone**.
 
-> And here's the proof. This is an actual seating where everyone booked so far fits, including passenger 207, that amber bar. That's the theorem from the slide, built for this one passenger.
+> And here it is. The app builds it with the method from the proof. Seat everyone in the order they get on, each on the lowest free berth. The amber bar is passenger 207. So the app doesn't just say a seating exists. It shows you one.
 
-### 4. Re-chart the waitlist (0:30)
+### 4. Re-chart the waitlist (0:40)
+
+Concept: **functions**, and a **greedy algorithm** proved optimal by an **exchange argument** (the swapping argument).
 
 Do: scroll back to the top of the chart and click **Re-chart waitlist**, just above the grid.
 
-> Proving it one passenger at a time doesn't help anyone travel. So once booking closes, the app re-charts the coach. Everyone who has a berth keeps one, though some move, and it fits in as many waitlisted people as possible.
+> But proving it for one person doesn't help anyone travel. So when booking closes, the app re-charts the coach. Remember, a seating is a function from passengers to berths. Re-charting picks a better one. Everyone who had a berth keeps one, maybe a different one. And as many waitlisted people as possible are added.
 >
-> Six of the 90 get a berth: the amber bars, and the green ticks in the waitlist. Passenger 207 is one of them. So 271 becomes 277, and six is provably the most you can add without cancelling anyone's ticket.
+> Six of the 90 now get a berth. They are the amber bars on the chart, and the green ticks in the list. Passenger 207 is one of them. So 271 becomes 277.
+>
+> And six is the most anyone could add. The method is simple: go through the waitlist in order of where each person gets off, and add anyone who still fits. A swapping argument proves nothing does better, and my tests check it against trying every possibility.
 
-### 5. Why only six? (0:30)
+### 5. Why only six? (0:40)
+
+Concept: **the theorem** again, as the limit on what any rule can do.
 
 Do: point at **Same passengers, other rules**, the three-line table on the right.
 
-> If 90 were fragmented, why only six? Because each of them had room at the moment they asked, but people kept booking after them and used that room.
+> If 90 people were fragmented, why can only six get in? Because each of them had space at the moment they booked. But more people kept booking after them, and those people took the space.
 >
-> This runs other rules on the same 361 people. Deciding berths only at charting, Deferred, gets 272. The best possible, if you knew every request in advance, is 301. But that would mean refusing people who booked early, and you can't know the future.
+> This table runs other rules on the same 361 people. Deferred, which gives out berth numbers only at charting time, seats 272. The best possible is 301. That's the biggest group whose busiest stretch stays within 72, and by the theorem it's the most that can fit. But to get there, you would need to know every booking in advance, and refuse some people who booked early.
 
 ### 6. Closing (0:15)
 
 Do: stay on the simulator. It is the best thing to have on screen for questions.
 
-> So, to answer the question: when you're waitlisted, often the train isn't actually full, and this app can prove it passenger by passenger. Fixing the allocation wins back a few seats. The bigger loss is that we serve people first come, first served without knowing who comes next.
+> So, to answer my question: when you are waitlisted, often the train isn't really full. And this app can prove it, one passenger at a time. Better berth allocation wins back a few seats. The bigger loss is that we serve people first come, first served, without knowing who will book next.
 >
-> Thank you. Happy to take questions, or to run any train you like.
+> Thank you. I'm happy to take questions, or to run any train you like.
+
+### Extra, if asked about pigeonhole or Dilworth
+
+Pigeonhole: under Allocation policy click **Deferred**, click **End**, then click the first red number, **#196**.
+
+> These red ones are the other kind. On one stretch of this trip, all 72 berths were already taken, and the app lists those 72 people. So a 73rd person can't fit. That's pigeonhole.
+
+Dilworth: click **Show all options** and point at **With unlimited berths**, at the bottom right.
+
+> To seat all 361 people, you would need at least 132 berths, because 132 people are on the busiest stretch. That's Dilworth's theorem: the fewest berths you need equals the biggest group of trips that all overlap. First-fit would use 138.
 
 ### If the demo breaks
 
@@ -200,6 +246,13 @@ Reload the page, set Route and Demand again, press **End**, and carry on from st
 - **Ideal Train Profile:** an AI system by CRIS, the Railways' software arm. It learns from past bookings and adjusts how berths are split between station pairs, and has been rolled out on over 200 trains. It is internal, so passengers can't see how it decides.
 - **"The Seat Reservation Problem":** a 1999 paper by Joan Boyar and Kim Larsen. It studies First-fit and Best-fit for train seats in the worst case, in theory.
 - **What is different here:** a proof for each rejected passenger, on real Indian routes, that anyone can open and check.
+
+### The news on slide 2: sources
+
+- **3.39 crore passengers:** Angel One, 14 May 2026, reporting RTI data for 2025–26 (about 92,877 a day, up from 1.65 crore in 2021–22). https://www.angelone.in/news/economy/over-3-39-crore-indians-lost-train-journeys-in-fy26-as-waitlists-tatkal-rush-and-bots-overwhelm-railways
+- **7,000 vacant berths a day:** The Tribune (PTI), 18 Sep 2022, on ticket examiners' handheld terminals: in their first four months, about 7,000 vacant berths a day released, and 2,759 waitlisted and 5,448 RAC passengers a day given berths on board, across about 1,390 trains. https://www.tribuneindia.com/news/nation/railways-new-device-checks-real-time-seat-availability-allots-7-000-unconfirmed-passengers-berths-daily-432983
+- **Since 2016:** The Tribune (PTI), 30 Sep 2016: berths still vacant at the starting station after the second chart are allotted automatically to waitlisted passengers at later stations. https://www.tribuneindia.com/news/archive/business/rlys-announces-facility-to-clear-wait-listed-passengers-302480
+- **Careful in answers:** these empty berths come from no-shows, cancellations and quotas as well as allocation. The news shows the problem is real; it does not say how much of it is fragmentation. That is what the project measures.
 
 ### Why TypeScript
 

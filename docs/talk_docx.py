@@ -198,7 +198,15 @@ while i < len(lines):
             i += 1
             text += ' ' + lines[i]
         p = doc.add_paragraph()
-        if text.startswith('Do: '):   # what you click, in a shaded box
+        if text.startswith('Concept: '):   # the idea on screen at this step, in an amber box
+            p._p.get_or_add_pPr().append(el('w:shd', val='clear', color='auto', fill='FCEFD6'))
+            r = p.add_run('CONCEPT  ')
+            r.bold, r.font.color.rgb, r.font.size = True, RGBColor.from_string('8A5A00'), Pt(9.5)
+            runs(p, text[9].upper() + text[10:], size=11)
+            pf = p.paragraph_format
+            pf.left_indent = pf.right_indent = Cm(0.2)
+            pf.space_before, pf.space_after = Pt(6), Pt(4)
+        elif text.startswith('Do: '):   # what you click, in a shaded box
             p._p.get_or_add_pPr().append(el('w:shd', val='clear', color='auto', fill='EEE8FB'))
             r = p.add_run('DO  ')
             r.bold, r.font.color.rgb, r.font.size = True, BRAND, Pt(9.5)
